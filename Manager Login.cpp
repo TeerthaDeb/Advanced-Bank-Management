@@ -6,7 +6,7 @@ using namespace std;
 short int height = 28, width = 118 , password_change_fake_try = 0;       	 											////// height = 23 , width = 78 for windows 7
 bool access_granted = false , have_record = true;
 const double default_interest_rate = 10/100;  																			//per year
-// Just for modification of the database : CUSTOMERS.txt and EMPLOYERS.txt
+// Just for modification of the database : CUSTOMERS.txt and EMPLOYERS_INDEX.TXT
 
 
 struct transection
@@ -774,23 +774,22 @@ void created_accounts_by_the_user(bank_employee current_employee)
 
 void create_employee() //Formating done
 {
-
-	vector<bank_employee> employers;
 	vector<long long int> others_numbers ;
-	bank_employee temp_employer;
+	bank_employee temp_employer , new_employer;
 	string name , address , password , phone_number , city , province , country;
 	char sex;
-	long long int size_of_employee = sizeof(bank_employee) , weekly_income;
+	long long int employers_numbers_from_index = 1 , weekly_income;
 	short int birth_date , birth_month , birth_year;
 	bool is_manager = false;
-	FILE *file_pointer;
-	file_pointer = fopen("EMPLOYERS.txt" , "r+");
-	have_record = file_pointer;
-	while(fread(&temp_employer , size_of_employee , 1 , file_pointer) == 1){
-		employers.push_back(temp_employer);
-		others_numbers.push_back(temp_employer.get_employers_number());
+	fstream index_file_pointer , database_file_pointer;
+	index_file_pointer.open("EMPLOYERS_INDEX.TXT" , ios::in);
+	have_record = bool(index_file_pointer);
+	if(have_record){
+		while(!index_file_pointer.eof()){														//replace with better idea
+			index_file_pointer >> employers_numbers_from_index;
+			others_numbers.push_back(employers_numbers_from_index);
+		}
 	}
-	bank_employee new_employer;
 	if(have_record){
 		cin.ignore();
 	}
@@ -799,8 +798,7 @@ void create_employee() //Formating done
 	}
 	system("cls");
 	drawboard();
-	cin.ignore();
-	gxy(5 , 2),printf("Enter employer full name(50 words maximum):  "); getline(cin , name);
+	gxy(5 , 2),printf("Enter employer full name(50 words maximum): "); getline(cin , name);
 	while(name.size() == 0){
 		gxy(5 , 3) , printf("Enter Full name(Cannot be Empty): "); getline(cin , name);
 	}
@@ -843,13 +841,13 @@ void create_employee() //Formating done
 	while(check_in_others_numbers(new_employer.get_employers_number() , others_numbers)){
 		new_employer.set_new_employee_number();
 	}
-	employers.push_back(new_employer);
-	fclose(file_pointer);
-	file_pointer = fopen("EMPLOYERS.txt" , "w+");
-	for(long long int i=0 ; i<employers.size() ; i++){
-		fwrite(&employers[i] , size_of_employee , 1 , file_pointer);
-	}
-	fclose(file_pointer);
+	database_file_pointer.open("Employers_Record\\" + to_string(new_employer.get_employers_number()) + ".txt" , ios::out);
+	database_file_pointer.write((char*) &new_employer , sizeof(new_employer));
+	database_file_pointer.close();
+	index_file_pointer.close();
+	index_file_pointer.open("EMPLOYERS_INDEX.TXT" , ios::app);
+	index_file_pointer<<new_employer.get_employers_number()<<'\n';
+	index_file_pointer.close();
 	system("cls");
 	drawboard();
 	new_employer.show_full_details();
@@ -868,7 +866,7 @@ void read_all_employees()
 	bank_employee temp_employer;
 	long long int size_of_employee = sizeof(bank_employee) ;
 	FILE *file_pointer;
-	file_pointer = fopen("EMPLOYERS.txt" , "r+");
+	file_pointer = fopen("EMPLOYERS_INDEX.TXT" , "r+");
 	while(fread(&temp_employer , size_of_employee , 1 , file_pointer) == 1){
 		employers.push_back(temp_employer);
 	}
@@ -890,7 +888,7 @@ void change_employee_password(bank_employee current_employee)
 	bank_employee temp_employer;
 	long long int target_employee_index = 0 , i;
 	FILE *file_pointer;
-	file_pointer = fopen("EMPLOYERS.txt" , "r");
+	file_pointer = fopen("EMPLOYERS_INDEX.TXT" , "r");
 	system("cls");
 	drawboard();
 	for(i = 0 ; fread(&temp_employer , sizeof(temp_employer) , 1 , file_pointer) == 1 ; i++){
@@ -910,7 +908,7 @@ void change_employee_password(bank_employee current_employee)
 			getline(cin , given_password);
 		}
 		employers[target_employee_index].change_password(given_password);
-		file_pointer = fopen("EMPLOYERS.txt" , "w");
+		file_pointer = fopen("EMPLOYERS_INDEX.TXT" , "w");
 		for(i = 0; i<employers.size() ; i++){
 			fwrite(&employers[i] , sizeof(employers[i]) , 1 , file_pointer);
             employers[i].print_every_thing();
@@ -1007,7 +1005,7 @@ void main_menu(bank_employee current_employee)
 void show_full_details_of_an_employee()
 {
 	FILE *employee_file_pointer;
-	employee_file_pointer = fopen("EMPLOYERS.txt" , "r");
+	employee_file_pointer = fopen("EMPLOYERS_INDEX.TXT" , "r");
 	bank_employee employee;
 	long long int employee_number;
 	bool found_employee = false;
@@ -1130,22 +1128,22 @@ void main_menu_for_managers(bank_employee current_employee)
 
 void log_in_screen()
 {
-	vector<bank_employee> employers;
+	bank_employee employer;
+	vector<long long int> employers_numbers;
 	bank_employee temp_employer;
 	long long int log_in_id , i;
-	long long int size_of_employee = sizeof(bank_employee) ;
 	bool check_employee = false;
 	fstream file_pointer;
-	char log_in_password[50];
-	file_pointer.open("EMPLOYERS.txt" , ios::in);
-	//file_pointer = fopen("EMPLOYERS.txt" , "r+");
+	string log_in_password;
+	file_pointer.open("EMPLOYERS_INDEX.TXT" , ios::in);
+	//file_pointer = fopen("EMPLOYERS_INDEX.TXT" , "r+");
 	drawboard();
 	if (file_pointer)
 	{
 		while(!file_pointer.eof())
 		{
-			file_pointer.read((char*) &temp_employer , sizeof(temp_employer));
-			employers.push_back(temp_employer);
+			file_pointer >> i;
+			employers_numbers.push_back(i);
 		}
 	}
 	else
@@ -1156,11 +1154,11 @@ void log_in_screen()
 		create_employee();
 		//fclose(file_pointer);
 		file_pointer.close();
-		file_pointer.open("EMPLOYERS.txt" , ios::in);
+		file_pointer.open("EMPLOYERS_INDEX.TXT" , ios::in);
 		while(!file_pointer.eof())
 		{
-			file_pointer.read((char*)&temp_employer , sizeof(temp_employer));
-			employers.push_back(temp_employer);
+			file_pointer >> i;
+			employers_numbers.push_back(i);
 		}
 		system("cls");
 		drawboard();
@@ -1168,18 +1166,22 @@ void log_in_screen()
 	log_in_again:
 	gxy(5 , 5),printf("Enter id: ");
 	cin>>log_in_id;
-	for(i=0 ; i<employers.size() ; i++)
+	for(i=0 ; i<employers_numbers.size() ; i++)
 	{
-		if(log_in_id == employers[i].get_employers_number()){
-			temp_employer = employers[i];
+		if(log_in_id == employers_numbers[i]){
+			fstream database_file_pointer;
+			database_file_pointer.open("Employers_Record\\" + to_string(log_in_id) + ".txt" , ios::in);
+			database_file_pointer.read((char*) &employer , sizeof(employer));
+			database_file_pointer.close();
 			check_employee = true;
 			break;
 		}
 	}
 	if(check_employee){
 		gxy(5 , 8),printf("Enter Password: ");
-		cin>>log_in_password;
-		access_granted = temp_employer.check_password(log_in_password);
+		cin.ignore();
+		getline(cin , log_in_password);
+		access_granted = employer.check_password(log_in_password);
 	}
 	else{
 		printf("No user found. going to log in screen again");
@@ -1190,16 +1192,16 @@ void log_in_screen()
 		goto log_in_again;
 	}
 	if(access_granted){
-		gxy(width/2 - 20 , height/2 + 5), printf("Welcome "); cout<<temp_employer.get_employee_name();
+		gxy(width/2 - 20 , height/2 + 5), printf("Welcome "); cout<<employer.get_employee_name();
 		gxy(width / 2 - 10 , height/2 + 6); wait(100);
 		gxy(10 ,  height/2 + 8), printf("Redirecting to main menu .");
 		wait(250);
 		file_pointer.close();
-		if(temp_employer.check_is_manager()){
-			main_menu_for_managers(temp_employer);
+		if(employer.check_is_manager()){
+			main_menu_for_managers(employer);
 		}
 		else{
-			main_menu(temp_employer);
+			main_menu(employer);
 		}
 	}
 	else{
@@ -1216,6 +1218,8 @@ void log_in_screen()
 int main()
 {
 	/* >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>							Should run from here                                             <<<<<<<<<<<<<<<<<<<<<<<<<<<*/
-    log_in_screen();
+	log_in_screen();
+	//create_employee();
+
 	return 0;
 }
