@@ -424,7 +424,6 @@ void log_out(bank_employee current_employee)
 	gxy(10 , 5);
 	printf("Are you sure to log out?(Y/N):");
 	ch = getch();
-	cin.ignore();
 	if(ch!='y' and ch!='Y'){
 		return;
 	}
@@ -883,43 +882,30 @@ void read_all_employees()
 
 void change_employee_password(bank_employee current_employee)
 {
-    cin.ignore();
-	string given_password;
-	vector<bank_employee> employers;
+    string given_password;
 	bank_employee temp_employer;
 	long long int target_employee_index = 0 , i;
-	FILE *file_pointer;
-	file_pointer = fopen("EMPLOYERS_INDEX.TXT" , "r");
+	fstream file_pointer;
+	file_pointer.open("Employers_Record\\" + to_string(current_employee.get_employers_number()) + ".txt" , ios::in | ios::out);
 	system("cls");
 	drawboard();
-	for(i = 0 ; fread(&temp_employer , sizeof(temp_employer) , 1 , file_pointer) == 1 ; i++){
-		employers.push_back(temp_employer);
-		if(current_employee.get_employers_number() == temp_employer.get_employers_number()){
-			target_employee_index = i;
-			gxy(5 , 5) , cout<<temp_employer.get_employee_name()<<" 's password going to be changed.";
-		}
-	}
-	fclose(file_pointer);
 	gxy(5 , 7) , printf("Enter current password: "); getline(cin , given_password);
-	if(employers[target_employee_index].check_password(given_password)){
+	if(current_employee.check_password(given_password)){
 		gxy(5 , 9) , printf("Enter new password: ");
 		getline(cin , given_password);
 		while(check_password(given_password)){
 			gxy(5 , 11) , printf("Enter new password(Include numbers and letters): ");
 			getline(cin , given_password);
 		}
-		employers[target_employee_index].change_password(given_password);
-		file_pointer = fopen("EMPLOYERS_INDEX.TXT" , "w");
-		for(i = 0; i<employers.size() ; i++){
-			fwrite(&employers[i] , sizeof(employers[i]) , 1 , file_pointer);
-            employers[i].print_every_thing();
-		}
-		fclose(file_pointer);
+		current_employee.change_password(given_password);
+		file_pointer.write((char*) &current_employee , sizeof(current_employee));
+		file_pointer.close();
 		gxy(5 ,15) , printf("Changed Password Succesfully");
 	}
 	else{
 		gxy(5 ,9) , printf("Password not matched. Cannot change password");
 		if(password_change_fake_try > 2){
+			file_pointer.close();
 			gxy(5 , 17) , printf("Too many fail tries. Logging out...\b");
 			wait(300);
 			exit(0);
@@ -932,6 +918,7 @@ void change_employee_password(bank_employee current_employee)
 	getch();
 	gxy(5 , 21) , printf("Going to main menu");
 	wait(200);
+	file_pointer.close();
 }
 
 void main_menu(bank_employee current_employee)
@@ -942,19 +929,20 @@ void main_menu(bank_employee current_employee)
 	drawboard();
 	gxy(width / 2 - 30 , 1) , 	printf(">>>>>>>>>>>>>>>>>>>>>>	 Main Menu	<<<<<<<<<<<<<<<<<<<<<<<<<");
 	gxy(width / 2 - 30 , 3) , 	printf("###################	    New Clients	    ###################");
-	gxy(30 , 4),		printf("[0] create a clients account");
-	gxy(30 , 5),		printf("[1] show accounts");
-	gxy(30 , 6),		printf("[2] modify an account");
-	gxy(30 , 7),		printf("[3] delete an account");
-	gxy(30 , 8),		printf("[4] show full details of an account");
-	gxy(width / 2 - 30 , 9) , 	printf("###################	  your account  	###################");
-	gxy(30 , 11),		printf("[5] Show your created accounts");
-	gxy(30 , 12),		printf("[6] change your password");
-	gxy(30 , 13),		printf("[7] change your account details");
-	gxy(30 , 14),		printf("[8] log out");
-	gxy(width / 2 - 10 , 23) ,	printf("Enter your selection..:  \b");
+	gxy(30 , 4),				printf("[0] create a client account");
+	gxy(30 , 5),				printf("[1] show accounts");
+	gxy(30 , 6),				printf("[2] modify an account");
+	gxy(30 , 7),				printf("[3] delete an account");
+	gxy(30 , 8),				printf("[4] show full details of an account");
+	gxy(30 , 9),				printf("[5] deposit money into an account");
+	gxy(width / 2 - 30 , 11) , 	printf("###################	  your account  	###################");
+	gxy(30 , 13),				printf("[6] Show your created accounts");
+	gxy(30 , 14),				printf("[7] change your password");
+	gxy(30 , 15),				printf("[8] change your account details");
+	gxy(30 , 16),				printf("[9] log out");
+
+	gxy(width / 2 - 10 , 24) ,	printf("Enter your selection..:  \b");
 	main_menu_choice = getch();
-	cin.ignore();
 	switch (main_menu_choice){
 		case '0' :{
 						create_new_customer(current_employee);
@@ -962,35 +950,29 @@ void main_menu(bank_employee current_employee)
 		}
 		case '1' :{
 						read_all_customers(current_employee);
-						//Modify_customers_account();
 						break;
 		}
 		case '2' :{
 						Modify_customers_account(current_employee);
-						//read_all_customers(current_employee);
 						break;
 		}
 		case '3' :{
 						Remove_Customers_account();
-						//created_accounts_by_the_user(current_employee);
 						break;
 		}
 		case '4' :{
 						show_full_account_details();
-						//Remove_Customers_account();
 						break;
 		}
-		case '5' : {
+		case '6' : {
 						created_accounts_by_the_user(current_employee);
-						//create_employee();
 						break;
 		}
-		case '6' :	{
+		case '7' :	{
 						change_employee_password(current_employee);
-						//read_all_employees();
 						break;
 		}
-		case '8' :	{
+		case '9' :	{
 						log_out(current_employee);
 						break;
 		}
