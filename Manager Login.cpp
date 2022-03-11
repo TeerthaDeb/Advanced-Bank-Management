@@ -437,9 +437,7 @@ void log_out(bank_employee current_employee)
 
 void create_new_customer(bank_employee current_employee)
 {
-	cin.ignore();
-	system("cls");
-	drawboard();
+	printf("Here");
 	char choice , sex;
 	bool check_employee = false;
 	vector<customers> clients;
@@ -447,15 +445,17 @@ void create_new_customer(bank_employee current_employee)
 	customers temp_customer , new_customer;
 	string name , address , city , province , country , password , phone_number;
 	double checking_amount , saving_amount , interest_rate = default_interest_rate;
-	long long int customer_employee_number ;
+	long long int customer_employee_number , number;
 	short int birth_date , birth_month , birth_year;
-	FILE *customers_file_pointer;
-	customers_file_pointer = fopen("CUSTOMERS.txt" , "r+");
-	while(fread(&temp_customer , sizeof(temp_customer) , 1 , customers_file_pointer) == 1)
-	{
-		clients.push_back(temp_customer);
-		other_customers_bank_number.push_back(temp_customer.get_account_number());
+	fstream file_pointer , database_file_pointer;
+	file_pointer.open("Clients_numbers.txt" , ios::in);
+	while(!file_pointer.eof()){
+		file_pointer>>number;
+		other_customers_bank_number.push_back(number);
 	}
+	file_pointer.close();
+	system("cls");
+	drawboard();
 	gxy(2 , 2) , printf("Enter Customer name: ") , getline(cin , name);
 	while(name.size() == 0){
 		gxy(2 , 3) , printf("Enter Customer name(name cannot be empty):    \b\b\b") , getline(cin , name);
@@ -498,7 +498,6 @@ void create_new_customer(bank_employee current_employee)
 		gxy(2 , 20) ,printf("\a	Enter sex(M / F / T / O): ");
 		scanf("%c" ,&sex);
 	}
-
 	gxy(2 , 21) ,printf("Is customer employee of the bank(0/1): "); cin>>check_employee;
 	if(check_employee){
 		gxy(2 , 22) ,printf("Employee Number: ");
@@ -522,11 +521,13 @@ void create_new_customer(bank_employee current_employee)
 	drawboard();
 	gxy(5 , 6);
 	new_customer.print_everything();
-	gxy(30 , 13) , printf("Account Nmber : ") , cout<<new_customer.get_account_number();
-	fclose(customers_file_pointer);
-	customers_file_pointer = fopen("CUSTOMERS.txt" , "a+");
-	fwrite(&new_customer , sizeof(new_customer) , 1 , customers_file_pointer);
-	fclose(customers_file_pointer);
+	gxy(30 , 13) , printf("Account Number : ") , cout<<new_customer.get_account_number();
+	file_pointer.open("Clients numbers.txt" , ios::app);
+	file_pointer<<'\n'<<new_customer.get_account_number();
+	file_pointer.close();
+	database_file_pointer.open("Clients_Record\\" + to_string(new_customer.get_account_number()) + ".txt" , ios::out);
+	database_file_pointer.write((char*) &new_customer , sizeof(new_customer));
+	database_file_pointer.close();
 	gxy(5 , 20) , printf("Press any key to go to main menu again...\b");
 	getch();
 	gxy(5 , 21) , printf("Going to main menu");
@@ -721,7 +722,7 @@ void show_full_account_details()
 	wait(100);
 }
 
-void read_all_customers(bank_employee current_employee)
+void real_all_clients(bank_employee current_employee)
 {
 	system("cls");
 	drawboard();
@@ -748,6 +749,7 @@ void read_all_customers(bank_employee current_employee)
 
 void created_accounts_by_the_user(bank_employee current_employee)
 {
+	//change the database management later
 	system("cls");
 	drawboard();
 	vector<customers> clients;
@@ -846,7 +848,7 @@ void create_employee() //Formating done
 	database_file_pointer.close();
 	index_file_pointer.close();
 	index_file_pointer.open("EMPLOYERS_INDEX.TXT" , ios::app);
-	index_file_pointer<<new_employer.get_employers_number()<<'\n';
+	index_file_pointer<<'\n'<<new_employer.get_employers_number();
 	index_file_pointer.close();
 	system("cls");
 	drawboard();
@@ -860,19 +862,25 @@ void create_employee() //Formating done
 
 void read_all_employees()
 {
+	bank_employee temp_employer;
+	long long int number;
+	vector<long long int> emplyoee_numbers;
+	fstream file_pointer , database_file_pointer;
+	file_pointer.open("EMPLOYERS_INDEX.TXT" , ios::in);
+	while(!file_pointer.eof()){
+		file_pointer>>number;
+		emplyoee_numbers.push_back(number);
+	}
+	file_pointer.close();
 	system("cls");
 	drawboard();
-	vector<bank_employee> employers;
-	bank_employee temp_employer;
-	long long int size_of_employee = sizeof(bank_employee) ;
-	FILE *file_pointer;
-	file_pointer = fopen("EMPLOYERS_INDEX.TXT" , "r+");
-	while(fread(&temp_employer , size_of_employee , 1 , file_pointer) == 1){
-		employers.push_back(temp_employer);
-	}
-	fclose(file_pointer);
-	for(long long int i=0 ; i<employers.size() ; i++){
-		gxy(2 , i+1) , employers[i].print_every_thing();
+	for(long long int i=0 ; i<emplyoee_numbers.size() ; i++){
+		number = emplyoee_numbers[i];
+		database_file_pointer.open("Employers_Record\\" + to_string(number) + ".txt" , ios::in);
+		database_file_pointer.read((char*) &temp_employer , sizeof(temp_employer));
+		gxy(2 , i+1) , temp_employer.print_every_thing();
+		temp_employer.~bank_employee();
+		database_file_pointer.close();
 	}
 	gxy(5 , 20) , printf("Press any key to go to main menu again...\b");
 	getch();
@@ -949,7 +957,7 @@ void main_menu(bank_employee current_employee)
 						break;
 		}
 		case '1' :{
-						read_all_customers(current_employee);
+						real_all_clients(current_employee);
 						break;
 		}
 		case '2' :{
@@ -989,8 +997,6 @@ void show_full_details_of_an_employee()
 {
 	fstream file_pointer;
 	file_pointer.open("EMPLOYERS_INDEX.TXT" , ios::in);
-	//FILE *employee_file_pointer;
-	//employee_file_pointer = fopen("EMPLOYERS_INDEX.TXT" , "r");
 	bank_employee employee;
 	long long int employee_number , index_number;
 	bool found_employee = false;
@@ -1060,7 +1066,7 @@ void main_menu_for_managers(bank_employee current_employee)
 						break;
 		}
 		case '1' :{
-						read_all_customers(current_employee);
+						real_all_clients(current_employee);
 						break;
 		}
 		case '2' :{
