@@ -437,7 +437,6 @@ void log_out(bank_employee current_employee)
 
 void create_new_customer(bank_employee current_employee)
 {
-	printf("Here");
 	char choice , sex;
 	bool check_employee = false;
 	vector<customers> clients;
@@ -523,7 +522,7 @@ void create_new_customer(bank_employee current_employee)
 	new_customer.print_everything();
 	gxy(30 , 13) , printf("Account Number : ") , cout<<new_customer.get_account_number();
 	file_pointer.open("Clients numbers.txt" , ios::app);
-	file_pointer<<'\n'<<new_customer.get_account_number();
+	file_pointer<<'\n'<<new_customer.get_account_number()<<' ';
 	file_pointer.close();
 	database_file_pointer.open("Clients_Record\\" + to_string(new_customer.get_account_number()) + ".txt" , ios::out);
 	database_file_pointer.write((char*) &new_customer , sizeof(new_customer));
@@ -724,21 +723,27 @@ void show_full_account_details()
 
 void real_all_clients(bank_employee current_employee)
 {
+	long long int temp_number , i ;
+	vector<long long int> clients_numbers;
+	customers temp_customer;
+	fstream file_pointer , data_base_file_pointer;
+	file_pointer.open("Clients_numbers.txt" , ios::in);
+	while(!file_pointer.eof()){
+		file_pointer.read((char*) &temp_number , sizeof(temp_number));
+		clients_numbers.push_back(temp_number);
+		cout<<temp_number;
+	}
+	file_pointer.close();
 	system("cls");
 	drawboard();
-	vector<customers> clients;
-	customers temp_customer;
-	FILE *file_pointer;
-	file_pointer = fopen("CUSTOMERS.txt" , "r+");
-	while(fread(&temp_customer , sizeof(temp_customer) , 1 , file_pointer) == 1){
-		clients.push_back(temp_customer);
-	}
-	fclose(file_pointer);
-	for(long long int i=0 ; i < clients.size() ; i++)
+	for(i=0 ; i < clients_numbers.size() ; i++)
 	{
-		gxy(2 , i+1) , clients[i].print_everything() , cout<<'\n';
+		data_base_file_pointer.open("Clients_Record\\" + to_string(clients_numbers[i]) + ".txt" , ios::in);
+		data_base_file_pointer.read((char*) &temp_customer , sizeof(temp_customer));
+		gxy(2 , i+1) , temp_customer.print_everything();
+		data_base_file_pointer.close();
 	}
-	if(clients.size() == 0){
+	if(clients_numbers.size() == 0){
 		gxy(25 , 15) , printf("There is no client in your bank");
 	}
 	gxy(5 , 20) , printf("Press any key to go to main menu again...\b");
