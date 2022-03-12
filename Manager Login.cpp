@@ -6,7 +6,7 @@ using namespace std;
 short int height = 28, width = 118 , password_change_fake_try = 0;       	 											////// height = 23 , width = 78 for windows 7
 bool access_granted = false , have_record = true;
 const double default_interest_rate = 10/100;  																			//per year
-// Just for modification of the database : CUSTOMERS.txt and EMPLOYERS_INDEX.TXT
+// Just for modification of the database : CLIENTS_NUMBERS.TXT and EMPLOYERS_INDEX.TXT
 
 
 struct transection
@@ -271,111 +271,104 @@ class bank_employee
 {
 	private:
 		static long long int total_employers ;
-private:
-	//variables:
-	char name[50] , address[20] , password[50] , phone_number[50] , sex , city[50] , province[20] , country[50];
-    long long int employee_number = 1000000 + (rand() % 8999999) , income_per_week;
-	bool is_manager = false;
-	long int accounts_created = 0;
-	short int birth_date , birth_month , birth_year;
-	//functions:
+	private:
+		//variables:
+			char name[50] , address[20] , password[50] , phone_number[50] , sex , city[50] , province[20] , country[50];
+    		long long int employee_number = 1000000 + (rand() % 8999999) , income_per_week;
+			bool is_manager = false;
+			long int accounts_created = 0;
+			short int birth_date , birth_month , birth_year;
+		//functions:
+	public:
+		//variables:
 
-public:
-	//variables:
+		//functions:
 
-	//functions:
-
-	//default constructor:
-	bank_employee()
-	{
-		total_employers++;
-	}
-
-	bank_employee(string employee_name , string employee_phone , string employee_password , string employee_address , string employee_city , string employee_province , string employee_country , char employee_sex , long long int employee_income_per_week , short int emplyoee_birth_date , short int employee_birth_month , short int employee_birth_year , bool is_employee_manager = false)
-	{
-		total_employers++;
-		set_everything(employee_name , employee_phone , employee_password , employee_address , employee_city , employee_province , employee_country , employee_sex , employee_income_per_week , emplyoee_birth_date , employee_birth_month , employee_birth_year , is_employee_manager);
-	}
-
-	//copy constructors:
-	/*bank_employee(const bank_employee &object)
-	{
-
-		return *this;
-	}*/
-
-	//destructor:
-	~bank_employee()
-	{
-
-	}
-	//setters:
-	void set_everything(string employee_name , string employee_phone , string employee_password , string employee_address , string employee_city , string employee_province , string employee_country , char employee_sex , long long int employee_income_per_week , short int emplyoee_birth_date , short int employee_birth_month , short int employee_birth_year , bool is_employee_manager = false)
-	{
-		strcpy(name , employee_name.c_str());
-		strcpy(phone_number , employee_phone.c_str());
-		strcpy(password , employee_password.c_str());
-		strcpy(address , employee_address.c_str());
-		strcpy(city , employee_city.c_str());
-		strcpy(province , employee_province.c_str());
-		strcpy(country , employee_country.c_str());
-		sex = employee_sex;
-		income_per_week = employee_income_per_week;
-		is_manager = is_employee_manager;
-		birth_date = emplyoee_birth_date;
-		birth_month = employee_birth_month;
-		birth_year = employee_birth_year;
-	}
-	void set_new_employee_number()
-	{
-		employee_number = 1000000 + (rand() % 8999999) + 3;
-	}
-	void created_new_account()
-	{
-		accounts_created++;
-	}
-	//getters:
-	void print_every_thing()
-	{
-		cout<<"name: "<<name<<" , address: " << address<< " , phone: " << phone_number <<" , employee_number : " <<employee_number << " , is manager : " << is_manager;
-	}
-	long long int get_employers_number()
-	{
-		return employee_number;
-	}
-	void print_name()
-	{
-	    printf("%s" ,name);
-	}
-	bool check_password(string employee_password)
-	{
-		return !strcasecmp(password , employee_password.c_str());
-	}
-	string get_employee_name()
-	{
-		return name;
-	}
-	bool check_is_manager()
-	{
-		return is_manager;
-	}
-	void show_full_details()
-	{
-		gxy(5 , 1) , cout<<"Employer Number:			"<<employee_number;
-		gxy(5 , 2) , cout<<"Name:				"<<name;
-		gxy(5 , 3) , cout<<"Address:				"<<address<<", "<<city<<", "<<province<<", "<<country;
-		gxy(5 , 4) , cout<<"Phone Number:			"<<phone_number;
-		gxy(5 , 5) , cout<<"Sex:				"<<sex;
-		gxy(5 , 6) , cout<<"Birh Date:				"<<birth_date<<"\\"<<birth_month<<"\\"<<birth_year;
-		gxy(5 , 7) , cout<<"Is Manager:			"<<is_manager;
-		gxy(5 , 8) , cout<<"accounts created:			"<<accounts_created;
-		gxy(5 , 9) , cout<<"Income per week:			"<<income_per_week;
-	}
+		//default constructor:
+			bank_employee(){
+				total_employers++;
+			}
+			bank_employee(string employee_name , string employee_phone , string employee_password , string employee_address , string employee_city , string employee_province , string employee_country , char employee_sex , long long int employee_income_per_week , short int emplyoee_birth_date , short int employee_birth_month , short int employee_birth_year , bool is_employee_manager = false)
+			{
+				total_employers++;
+				set_everything(employee_name , employee_phone , employee_password , employee_address , employee_city , employee_province , employee_country , employee_sex , employee_income_per_week , emplyoee_birth_date , employee_birth_month , employee_birth_year , is_employee_manager);
+			}
+		//copy constructors:
+			/*bank_employee(const bank_employee &object)
+			{
+				return *this;
+			}*/
+		//destructor:
+			~bank_employee()
+			{
+			}
+		//setters:
+			void set_everything(string employee_name , string employee_phone , string employee_password , string employee_address , string employee_city , string employee_province , string employee_country , char employee_sex , long long int employee_income_per_week , short int emplyoee_birth_date , short int employee_birth_month , short int employee_birth_year , bool is_employee_manager = false)
+			{
+				strcpy(name , employee_name.c_str());
+				strcpy(phone_number , employee_phone.c_str());
+				strcpy(password , employee_password.c_str());
+				strcpy(address , employee_address.c_str());
+				strcpy(city , employee_city.c_str());
+				strcpy(province , employee_province.c_str());
+				strcpy(country , employee_country.c_str());
+				sex = employee_sex;
+				income_per_week = employee_income_per_week;
+				is_manager = is_employee_manager;
+				birth_date = emplyoee_birth_date;
+				birth_month = employee_birth_month;
+				birth_year = employee_birth_year;
+			}
+			void set_new_employee_number()
+			{
+				employee_number = 1000000 + (rand() % 8999999) + 3;
+			}
+			void created_new_account()
+			{
+				accounts_created++;
+			}
+		//getters:
+			void print_every_thing()
+			{
+				cout<<"name: "<<name<<" , address: " << address<< " , phone: " << phone_number <<" , employee_number : " <<employee_number << " , is manager : " << is_manager;
+			}
+			long long int get_employers_number()
+			{
+				return employee_number;
+			}
+			void print_name()
+			{
+			    printf("%s" ,name);
+			}
+			bool check_password(string employee_password)
+			{
+				return !strcasecmp(password , employee_password.c_str());
+			}
+			string get_employee_name()
+			{
+				return name;
+			}
+			bool check_is_manager()
+			{
+				return is_manager;
+			}
+			void show_full_details()
+			{
+				gxy(5 , 1) , cout<<"Employer Number:			"<<employee_number;
+				gxy(5 , 2) , cout<<"Name:				"<<name;
+				gxy(5 , 3) , cout<<"Address:				"<<address<<", "<<city<<", "<<province<<", "<<country;
+				gxy(5 , 4) , cout<<"Phone Number:			"<<phone_number;
+				gxy(5 , 5) , cout<<"Sex:				"<<sex;
+				gxy(5 , 6) , cout<<"Birh Date:				"<<birth_date<<"\\"<<birth_month<<"\\"<<birth_year;
+				gxy(5 , 7) , cout<<"Is Manager:			"<<is_manager;
+				gxy(5 , 8) , cout<<"accounts created:			"<<accounts_created;
+				gxy(5 , 9) , cout<<"Income per week:			"<<income_per_week;
+			}
 	//other functions:
-	void change_password(string new_password)
-	{
-		strcpy(password , new_password.c_str());
-	}
+			void change_password(string new_password)
+			{
+				strcpy(password , new_password.c_str());
+			}
 };
 
 long long int bank_employee::total_employers = 0;
@@ -447,9 +440,12 @@ void create_new_customer(bank_employee current_employee)
 	long long int customer_employee_number , number;
 	short int birth_date , birth_month , birth_year;
 	fstream file_pointer , database_file_pointer;
-	file_pointer.open("Clients_numbers.txt" , ios::in);
+	file_pointer.open("CLIENTS_NUMBERS.TXT" , ios::in);
 	while(!file_pointer.eof()){
 		file_pointer>>number;
+		if(count(other_customers_bank_number.begin() , other_customers_bank_number.end() , number)){
+			break;
+		}
 		other_customers_bank_number.push_back(number);
 	}
 	file_pointer.close();
@@ -521,7 +517,7 @@ void create_new_customer(bank_employee current_employee)
 	gxy(5 , 6);
 	new_customer.print_everything();
 	gxy(30 , 13) , printf("Account Number : ") , cout<<new_customer.get_account_number();
-	file_pointer.open("Clients numbers.txt" , ios::app);
+	file_pointer.open("CLIENTS_NUMBERS.TXT" , ios::app);
 	file_pointer<<'\n'<<new_customer.get_account_number()<<' ';
 	file_pointer.close();
 	database_file_pointer.open("Clients_Record\\" + to_string(new_customer.get_account_number()) + ".txt" , ios::out);
@@ -554,7 +550,6 @@ void Remove_Customers_account()
 			gxy(15 , 7),	cout<<"Are you sure to delete "<<c1.get_name()<<"'s name?(y/n): ";
 			surity = getch();
 			if(surity != 'Y' and surity != 'y'){
-				///////////////////// a warnig of others opening accounts
 				fwrite(&c1, sizeof(c1) ,1 , ptr2);
 			}
         }
@@ -592,7 +587,6 @@ void Modify_customers_account(bank_employee current_emplyoee)
     ptr1=fopen("CUSTOMERS.txt" , "r");
     ptr2=fopen("temp.txt" , "w+");
 	system("cls");
-    //setcolor(04);
     drawboard();
     customers c1;
 	char surity = 'n';
@@ -721,30 +715,34 @@ void show_full_account_details()
 	wait(100);
 }
 
-void real_all_clients(bank_employee current_employee)
+void read_all_clients()
 {
 	long long int temp_number , i ;
 	vector<long long int> clients_numbers;
 	customers temp_customer;
 	fstream file_pointer , data_base_file_pointer;
-	file_pointer.open("Clients_numbers.txt" , ios::in);
+	file_pointer.open("CLIENTS_NUMBERS.TXT" , ios::in);
 	while(!file_pointer.eof()){
-		file_pointer.read((char*) &temp_number , sizeof(temp_number));
+		file_pointer>>temp_number;
+		if(count(clients_numbers.begin() , clients_numbers.end() , temp_number)){
+			break;
+		}
 		clients_numbers.push_back(temp_number);
-		cout<<temp_number;
 	}
 	file_pointer.close();
 	system("cls");
 	drawboard();
-	for(i=0 ; i < clients_numbers.size() ; i++)
-	{
-		data_base_file_pointer.open("Clients_Record\\" + to_string(clients_numbers[i]) + ".txt" , ios::in);
-		data_base_file_pointer.read((char*) &temp_customer , sizeof(temp_customer));
-		gxy(2 , i+1) , temp_customer.print_everything();
-		data_base_file_pointer.close();
-	}
 	if(clients_numbers.size() == 0){
 		gxy(25 , 15) , printf("There is no client in your bank");
+	}
+	else{
+		for (i = 0; i < clients_numbers.size(); i++)
+		{
+			data_base_file_pointer.open("Clients_Record\\" + to_string(clients_numbers[i]) + ".txt", ios::in);
+			data_base_file_pointer.read((char *)&temp_customer, sizeof(temp_customer));
+			gxy(2, i + 1), temp_customer.print_everything();
+			data_base_file_pointer.close();
+		}
 	}
 	gxy(5 , 20) , printf("Press any key to go to main menu again...\b");
 	getch();
@@ -754,7 +752,6 @@ void real_all_clients(bank_employee current_employee)
 
 void created_accounts_by_the_user(bank_employee current_employee)
 {
-	//change the database management later
 	system("cls");
 	drawboard();
 	vector<customers> clients;
@@ -869,18 +866,21 @@ void read_all_employees()
 {
 	bank_employee temp_employer;
 	long long int number;
-	vector<long long int> emplyoee_numbers;
+	vector<long long int> employee_numbers;
 	fstream file_pointer , database_file_pointer;
 	file_pointer.open("EMPLOYERS_INDEX.TXT" , ios::in);
 	while(!file_pointer.eof()){
 		file_pointer>>number;
-		emplyoee_numbers.push_back(number);
+		if(count(employee_numbers.begin() , employee_numbers.end() , number)){
+			break;
+		}
+		employee_numbers.push_back(number);
 	}
 	file_pointer.close();
 	system("cls");
 	drawboard();
-	for(long long int i=0 ; i<emplyoee_numbers.size() ; i++){
-		number = emplyoee_numbers[i];
+	for(long long int i=0 ; i<employee_numbers.size() ; i++){
+		number = employee_numbers[i];
 		database_file_pointer.open("Employers_Record\\" + to_string(number) + ".txt" , ios::in);
 		database_file_pointer.read((char*) &temp_employer , sizeof(temp_employer));
 		gxy(2 , i+1) , temp_employer.print_every_thing();
@@ -962,7 +962,7 @@ void main_menu(bank_employee current_employee)
 						break;
 		}
 		case '1' :{
-						real_all_clients(current_employee);
+						read_all_clients();
 						break;
 		}
 		case '2' :{
@@ -1071,7 +1071,7 @@ void main_menu_for_managers(bank_employee current_employee)
 						break;
 		}
 		case '1' :{
-						real_all_clients(current_employee);
+						read_all_clients();
 						break;
 		}
 		case '2' :{
