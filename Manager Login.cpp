@@ -2,6 +2,8 @@
 #include <conio.h>
 #include <string>
 #include <windows.h>
+#include <sys/stat.h>
+#include <sys/types.h>
 using namespace std;
 short int height = 28, width = 118 , password_change_fake_try = 0;       	 											////// height = 23 , width = 78 for windows 7
 bool access_granted = false , have_record = true;
@@ -278,6 +280,7 @@ class bank_employee
 			bool is_manager = false;
 			long int accounts_created = 0;
 			short int birth_date , birth_month , birth_year;
+			vector<long long int> created_account_numbers;
 		//functions:
 	public:
 		//variables:
@@ -323,9 +326,10 @@ class bank_employee
 			{
 				employee_number = 1000000 + (rand() % 8999999) + 3;
 			}
-			void created_new_account()
+			void created_new_account(long long int client_id_number)
 			{
 				accounts_created++;
+				created_account_numbers.push_back(client_id_number);
 			}
 		//getters:
 			void print_every_thing()
@@ -364,11 +368,20 @@ class bank_employee
 				gxy(5 , 8) , cout<<"accounts created:			"<<accounts_created;
 				gxy(5 , 9) , cout<<"Income per week:			"<<income_per_week;
 			}
+			void show_created_accounts()
+			{
+				for(auto i : created_account_numbers) cout<<i<<' ';
+			}
+			vector<long long int> &get_created_accounts()
+			{
+				return created_account_numbers;
+			}
 	//other functions:
 			void change_password(string new_password)
 			{
 				strcpy(password , new_password.c_str());
 			}
+
 };
 
 long long int bank_employee::total_employers = 0;
@@ -511,7 +524,7 @@ void create_new_customer(bank_employee current_employee)
 	while(check_in_others_numbers(new_customer.get_account_number() , other_customers_bank_number)){
 		new_customer.create_new_account_number();
 	}
-	current_employee.created_new_account();
+	current_employee.created_new_account(new_customer.get_account_number());
 	system("cls");
 	drawboard();
 	gxy(5 , 6);
@@ -522,6 +535,9 @@ void create_new_customer(bank_employee current_employee)
 	file_pointer.close();
 	database_file_pointer.open("Clients_Record\\" + to_string(new_customer.get_account_number()) + ".txt" , ios::out);
 	database_file_pointer.write((char*) &new_customer , sizeof(new_customer));
+	database_file_pointer.close();
+	database_file_pointer.open("Employers_Record\\" + to_string(current_employee.get_employers_number()) + ".txt" , ios::out);
+	database_file_pointer.write((char*) &current_employee , sizeof(current_employee));
 	database_file_pointer.close();
 	gxy(5 , 20) , printf("Press any key to go to main menu again...\b");
 	getch();
@@ -752,22 +768,22 @@ void read_all_clients()
 
 void created_accounts_by_the_user(bank_employee current_employee)
 {
+	long long int i;
+	vector<long long int> clients_numbers;
+	fstream data_base_file_pointer;
+	customers client;
+	clients_numbers = current_employee.get_created_accounts();
 	system("cls");
 	drawboard();
-	vector<customers> clients;
-	customers temp_customer;
-	FILE *file_pointer;
-	file_pointer = fopen("CUSTOMERS.txt" , "r+");
-	while(fread(&temp_customer , sizeof(temp_customer) , 1 , file_pointer) == 1){
-		if(temp_customer.get_account_creators_id() == current_employee.get_employers_number()){
-			clients.push_back(temp_customer);
-		}
+	//printf("Got the vector");cout<<clients_numbers.size();
+	for(i=0 ; i<clients_numbers[i] ; i++){
+		printf("number =");cout<<clients_numbers[i]<<'\n';
+		data_base_file_pointer.open("Clients_Record\\" + to_string(clients_numbers[i]) + ".txt", ios::in);
+		data_base_file_pointer.read((char *)&client, sizeof(client));
+		gxy(2, i + 1), client.print_everything();
+		data_base_file_pointer.close();
 	}
-	fclose(file_pointer);
-	for(long long int i=0 ; i < clients.size() ; i++){
-		gxy(2 , i+1) , clients[i].print_everything() , cout<<'\n';
-	}
-	if(clients.size() == 0){
+	if(clients_numbers.size() == 0){
 		gxy(25 , 15) , printf("There is no account that was created by you...");
 	}
 	gxy(5 , 20) , printf("Press any key to go to main menu again...\b");
@@ -776,7 +792,7 @@ void created_accounts_by_the_user(bank_employee current_employee)
 	wait(200);
 }
 
-void create_employee() //Formating done
+void create_employee()
 {
 	vector<long long int> others_numbers ;
 	bank_employee temp_employer , new_employer;
@@ -1129,13 +1145,15 @@ void log_in_screen()
 	fstream file_pointer;
 	string log_in_password;
 	file_pointer.open("EMPLOYERS_INDEX.TXT" , ios::in);
-	//file_pointer = fopen("EMPLOYERS_INDEX.TXT" , "r+");
 	drawboard();
 	if (file_pointer)
 	{
 		while(!file_pointer.eof())
 		{
-			file_pointer >> i;
+			file_pointer>>i;
+			if(count(employers_numbers.begin() , employers_numbers.end() , i)){
+				break;
+			}
 			employers_numbers.push_back(i);
 		}
 	}
@@ -1145,12 +1163,14 @@ void log_in_screen()
 		getch();
 		have_record = false;
 		create_employee();
-		//fclose(file_pointer);
 		file_pointer.close();
 		file_pointer.open("EMPLOYERS_INDEX.TXT" , ios::in);
 		while(!file_pointer.eof())
 		{
-			file_pointer >> i;
+			file_pointer>>i;
+			if(count(employers_numbers.begin() , employers_numbers.end() , i)){
+				break;
+			}
 			employers_numbers.push_back(i);
 		}
 		system("cls");
@@ -1210,6 +1230,7 @@ void log_in_screen()
 
 int main()
 {
+	SetConsoleTitle("                                                                                                               Bank Management System");
 	/* >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>							Should run from here                                             <<<<<<<<<<<<<<<<<<<<<<<<<<<*/
 	log_in_screen();
 	return 0;
