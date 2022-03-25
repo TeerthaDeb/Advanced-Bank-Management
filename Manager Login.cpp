@@ -280,7 +280,6 @@ class bank_employee
 			bool is_manager = false;
 			long int accounts_created = 0;
 			short int birth_date , birth_month , birth_year;
-			vector<long long int> created_account_numbers;
 		//functions:
 	public:
 		//variables:
@@ -329,7 +328,6 @@ class bank_employee
 			void created_new_account(long long int client_id_number)
 			{
 				accounts_created++;
-				created_account_numbers.push_back(client_id_number);
 			}
 		//getters:
 			void print_every_thing()
@@ -367,14 +365,6 @@ class bank_employee
 				gxy(5 , 7) , cout<<"Is Manager:			"<<is_manager;
 				gxy(5 , 8) , cout<<"accounts created:			"<<accounts_created;
 				gxy(5 , 9) , cout<<"Income per week:			"<<income_per_week;
-			}
-			void show_created_accounts()
-			{
-				for(auto i : created_account_numbers) cout<<i<<' ';
-			}
-			vector<long long int> &get_created_accounts()
-			{
-				return created_account_numbers;
 			}
 	//other functions:
 			void change_password(string new_password)
@@ -770,21 +760,33 @@ void created_accounts_by_the_user(bank_employee current_employee)
 {
 	long long int i;
 	vector<long long int> clients_numbers;
-	fstream data_base_file_pointer;
+	fstream file_pointer , data_base_file_pointer;
 	customers client;
-	clients_numbers = current_employee.get_created_accounts();
+	long long int temp_client_number;
+	file_pointer.open("CLIENTS_NUMBERS.TXT" , ios::in);
 	system("cls");
 	drawboard();
-	//printf("Got the vector");cout<<clients_numbers.size();
-	for(i=0 ; i<clients_numbers[i] ; i++){
-		printf("number =");cout<<clients_numbers[i]<<'\n';
-		data_base_file_pointer.open("Clients_Record\\" + to_string(clients_numbers[i]) + ".txt", ios::in);
-		data_base_file_pointer.read((char *)&client, sizeof(client));
-		gxy(2, i + 1), client.print_everything();
-		data_base_file_pointer.close();
+	while(!file_pointer.eof()){
+		file_pointer>>temp_client_number;
+		if(count(clients_numbers.begin() , clients_numbers.end() , temp_client_number)){
+			break;
+		}
+		clients_numbers.push_back(temp_client_number);
 	}
+	file_pointer.close();
 	if(clients_numbers.size() == 0){
 		gxy(25 , 15) , printf("There is no account that was created by you...");
+	}
+	else{
+		for (i = 0; clients_numbers.size() > i; i++){
+			data_base_file_pointer.open("Clients_Record\\" + to_string(clients_numbers[i]) + ".txt", ios::in);
+			data_base_file_pointer.read((char *)&client, sizeof(client));
+			if (current_employee.get_employers_number() == client.get_account_creators_id())
+			{
+				gxy(1 , i+1) , client.print_everything();
+			}
+			data_base_file_pointer.close();
+		}
 	}
 	gxy(5 , 20) , printf("Press any key to go to main menu again...\b");
 	getch();
