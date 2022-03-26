@@ -211,6 +211,22 @@ class customers
 			{
 				return name;
 			}
+			string get_address()
+			{
+				return address;
+			}
+			string get_city()
+			{
+				return city;
+			}
+			string get_province()
+			{
+				return province;
+			}
+			string get_country()
+			{
+				return country;
+			}
 		//others:
 			void request_for_visa(long long int last_modifier_id)
 			{
@@ -521,7 +537,7 @@ void create_new_customer(bank_employee current_employee)
 	new_customer.print_everything();
 	gxy(30 , 13) , printf("Account Number : ") , cout<<new_customer.get_account_number();
 	file_pointer.open("CLIENTS_NUMBERS.TXT" , ios::app);
-	file_pointer<<'\n'<<new_customer.get_account_number()<<' ';
+	file_pointer<<'\n'<<new_customer.get_account_number();
 	file_pointer.close();
 	database_file_pointer.open("Clients_Record\\" + to_string(new_customer.get_account_number()) + ".txt" , ios::out);
 	database_file_pointer.write((char*) &new_customer , sizeof(new_customer));
@@ -589,42 +605,43 @@ void Remove_Customers_account()
 
 void Modify_customers_account(bank_employee current_emplyoee)
 {
-    FILE *ptr1,*ptr2;
-    ptr1=fopen("CUSTOMERS.txt" , "r");
-    ptr2=fopen("temp.txt" , "w+");
+	fstream file_pointer , file_pointer_2;
+	file_pointer.open("CLIENTS_NUMBERS.TXT" , ios::in);
+	char surity = 'n';
+	long long int account_number = 0,tmp;
+	bool acc_find = false;
 	system("cls");
     drawboard();
-    customers c1;
-	char surity = 'n';
-    gxy(6,4),printf("Enter the Account Number that you want to modify: ");
-    long long int acc_number = 0,tmp;
-    cin>>acc_number;
-    bool acc_find=0;
-    while(fread(&c1, sizeof(c1), 1, ptr1)){
-        if(acc_number == c1.get_account_number()){
-            acc_find=999;
-			cin.ignore();
-			gxy(15 , 7),	cout<<"Are you sure to modify "<<c1.get_name()<<"'s account?(y/n): ";
+	gxy(6,4),printf("Enter the Account Number that you want to modify: ");
+    cin>>tmp;
+    while(!file_pointer.eof()){
+		file_pointer>>account_number;
+        if(account_number == tmp){
+            acc_find = true;
+			customers client;
+			file_pointer_2.open("Clients_Record\\" + to_string(account_number) + ".txt", ios::in);
+			file_pointer_2.read((char*) &client , sizeof(client));
+			gxy(15 , 7),	cout<<"Are you sure to modify "<<client.get_name()<<"'s account?(y/n): ";
 			surity = getch();
+			cin.ignore();
 			if(surity == 'Y' or surity == 'y'){
-				system("cls");
-				drawboard();
 				string name , address , city , province , country , phone_number;
 				char choice , sex;
 				double interest_rate;
 				short int birth_date , birth_month , birth_year;
 				bool check_employee = 0;
 				long long int customer_employee_number ;
-				gxy(2 , 2) , printf("Enter Customer name(default name = %s): " ,c1.get_name().c_str()) , getline(cin , name);
+				system("cls");
+				drawboard();
+				gxy(2 , 2) , printf("Enter Customer name(default name = %s): " ,client.get_name().c_str()) , getline(cin , name);
 				while(name.size() == 0){
 					gxy(2 , 3) , printf("Enter Customer name(name cannot be empty):    \b\b\b") , getline(cin , name);
 				}
-				gxy(2 , 4) ,printf("Enter Customer address: ") , getline(cin , address);
-				gxy(2 , 5) ,printf("Enter customer city: ") , getline(cin , city);
-				gxy(2 , 6) ,printf("Enter customer province: "), getline(cin , province);
-				gxy(2 , 7) ,printf("Enter customer country: ") , getline(cin , country);
+				gxy(2 , 4) ,printf("Enter Customer address(default : %s): " ,client.get_address().c_str()) , getline(cin , address);
+				gxy(2 , 5) ,printf("Enter customer city(default : %s): " ,client.get_city().c_str()) , getline(cin , city);
+				gxy(2 , 6) ,printf("Enter customer province(default : %s): " ,client.get_province().c_str()), getline(cin , province);
+				gxy(2 , 7) ,printf("Enter customer country(default : %s): " ,client.get_country().c_str()) , getline(cin , country);
 				gxy(2 , 8) ,printf("Modify_interest_rate(Y/N): ");
-				cin.ignore();
 				scanf("%c" ,&choice);
 				if(choice == 'Y' or choice == 'y'){
 					printf("Enter Customer interest_rate: ") , cin>>interest_rate;
@@ -656,11 +673,14 @@ void Modify_customers_account(bank_employee current_emplyoee)
 					gxy(2 , 19) ,printf("Employee Number: ");
 					cin>>customer_employee_number;
 				}
-				c1.modify_account(current_emplyoee.get_employers_number() , name , address , city , province , country , interest_rate , birth_date , birth_month , birth_year , sex , phone_number ,  check_employee , customer_employee_number);
+				client.modify_account(current_emplyoee.get_employers_number() , name , address , city , province , country , interest_rate , birth_date , birth_month , birth_year , sex , phone_number ,  check_employee , customer_employee_number);
+				file_pointer_2.close();
+				file_pointer_2.open("Clients_Record\\" + to_string(account_number) + ".txt", ios::out);
+				file_pointer_2.write((char*) &client , sizeof(client));
 			}
         }
-        fwrite(&c1, sizeof(c1) ,1 , ptr2);
     }
+
 	system("cls");
 	drawboard();
     if(acc_find>0){
@@ -677,43 +697,47 @@ void Modify_customers_account(bank_employee current_emplyoee)
         char cho;
         cho=getch();
         if(cho=='Y'||cho=='y'){
-            fclose(ptr1);
-			fclose(ptr2);
+            file_pointer.close();
+            file_pointer_2.close();
             Remove_Customers_account();
         }
     }
-    fclose(ptr1),fclose(ptr2);
-    remove("CUSTOMERS.txt");
-    rename("temp.txt" , "CUSTOMERS.txt");
+    file_pointer_2.close();
+	file_pointer.close();
 }
 
 void show_full_account_details()
 {
-	FILE *customers_file_pointer;
-	customers_file_pointer = fopen("CUSTOMERS.txt" , "r");
-	customers customer;
-	long long int account_number;
+	long long int temp_number , i , account_number;
 	bool found_customer = false;
 	system("cls");
 	drawboard();
 	gxy(6 , 4),printf("Enter the account number to show full info of the account: ");
-	cin>>account_number;
+	cin>>temp_number;
+	fstream file_pointer;
+	file_pointer.open("CLIENTS_NUMBERS.TXT" , ios::in);
 	gxy(6 , 7) , printf("Searching");
-	while(fread(&customer, sizeof(customer), 1, customers_file_pointer)){
-        if(account_number == customer.get_account_number()){
+	while(!file_pointer.eof()){
+		file_pointer>>account_number;
+        if(account_number == temp_number){
 			found_customer = true;
 			system("cls");
 			drawboard();
-           	customer.print_every_details_for_customer();
+			customers client;
+           	file_pointer.close();
+			file_pointer.open("Clients_Record\\" + to_string(account_number) + ".txt", ios::in);
+			file_pointer.read((char*) &client , sizeof(client));
+			client.print_every_details_for_customer();
+			break;
     	}
 		else if(found_customer == false){
 			printf(". ");
 		}
 	}
+	file_pointer.close();
 	if(found_customer == false){
 		gxy(6 , 10) , printf("No account found with this number");
 	}
-	fclose(customers_file_pointer);
 	gxy(5 , 20);
 	printf("Press any key to go to main menu again...\b");
 	getch();
@@ -762,6 +786,7 @@ void created_accounts_by_the_user(bank_employee current_employee)
 	vector<long long int> clients_numbers;
 	fstream file_pointer , data_base_file_pointer;
 	customers client;
+	bool account_found = false;
 	long long int temp_client_number;
 	file_pointer.open("CLIENTS_NUMBERS.TXT" , ios::in);
 	system("cls");
@@ -774,19 +799,18 @@ void created_accounts_by_the_user(bank_employee current_employee)
 		clients_numbers.push_back(temp_client_number);
 	}
 	file_pointer.close();
-	if(clients_numbers.size() == 0){
-		gxy(25 , 15) , printf("There is no account that was created by you...");
-	}
-	else{
-		for (i = 0; clients_numbers.size() > i; i++){
-			data_base_file_pointer.open("Clients_Record\\" + to_string(clients_numbers[i]) + ".txt", ios::in);
-			data_base_file_pointer.read((char *)&client, sizeof(client));
-			if (current_employee.get_employers_number() == client.get_account_creators_id())
-			{
+
+	for (i = 0; clients_numbers.size() > i; i++){
+		data_base_file_pointer.open("Clients_Record\\" + to_string(clients_numbers[i]) + ".txt", ios::in);
+		data_base_file_pointer.read((char *)&client, sizeof(client));
+		if (current_employee.get_employers_number() == client.get_account_creators_id()){
 				gxy(1 , i+1) , client.print_everything();
-			}
-			data_base_file_pointer.close();
+				account_found = true;
 		}
+		data_base_file_pointer.close();
+	}
+	if(account_found == false){
+		gxy(25 , 15) , printf("There is no account that was created by you...");
 	}
 	gxy(5 , 20) , printf("Press any key to go to main menu again...\b");
 	getch();
