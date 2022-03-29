@@ -78,7 +78,7 @@ class customers
 		bool active_status = false;
 		char name[50] , address[20], phone_number[50] , sex , password[50] , city[50] , province[50] , country[50];
 		double checking_amount = 0 , saving_amount = 0 , visa_amount = 0 , interest_rate , points = 0 , loans = 0;
-		long long int account_number = 100000000 + (rand() % 899999999) , visa_number = 1000000000 + (rand() % 8999999999) , account_creators_id = 0 , employee_number = 0 , last_modified_by = 0;
+		long long int account_number = 100000000 + (rand() % 899999999) , visa_number = 1000000000 + (rand() % 8999999999) , account_creators_id = 0 , employee_number = 0 , last_modifier = 0;
 		bool have_visa = 0 , is_employee = false;
 		short int birth_year , birth_month , birth_date , account_create_date , account_create_month , account_create_year , made_transection = 0;
 		transection transfers[50];
@@ -184,7 +184,7 @@ class customers
 			//getters:
 			void print_everything()
 			{
-				cout<<"name: "<<name<<" ;acount_number: "<<account_number<<" ;total: "<<saving_amount + checking_amount + visa_amount<<" ;interest_rate: "<<interest_rate<<" ;Loans: "<<loans<<" ;last modified by: "<<last_modified_by <<'\n';
+				cout<<"name: "<<name<<" ;acount_number: "<<account_number<<" ;total: "<<saving_amount + checking_amount + visa_amount<<" ;interest_rate: "<<interest_rate<<" ;Loans: "<<loans<<" ;last modified by: "<<last_modifier <<'\n';
 			}
 			long long int get_total_customers()
 			{
@@ -227,11 +227,19 @@ class customers
 			{
 				return country;
 			}
+			double get_checking_amount()
+			{
+				return checking_amount;
+			}
+			double get_saving_amount()
+			{
+				return saving_amount;
+			}
 		//others:
 			void request_for_visa(long long int last_modifier_id)
 			{
 				have_visa = true;
-				last_modified_by = last_modifier_id;
+				last_modifier = last_modifier_id;
 			}
 			void create_new_account_number()
 			{
@@ -240,7 +248,11 @@ class customers
 			void modify_account(long long int modifiers_id , string user_name , string user_address , string user_city , string user_province , string user_country , double user_interest_rate , short int user_birth_date , short int user_birth_month , short int user_birth_year , char user_sex , string user_phone_number ,  bool user_is_employee_of_the_bank , long long int user_employee_number)
 			{
 				set_every_thing_for_user(user_name , password , user_address , user_city , user_province , user_country , account_creators_id , user_birth_date , user_birth_month , user_birth_year , user_sex , user_phone_number , checking_amount , saving_amount , interest_rate);
-				last_modified_by = modifiers_id;
+                last_modified_by(modifiers_id);
+			}
+			void last_modified_by(long long int employee_id)
+			{
+				last_modifier = employee_id;
 			}
 			void print_every_details_for_customer()
 			{
@@ -266,7 +278,7 @@ class customers
 				else{
 					gxy(5 , 12) , cout<<"Not an bank employee";
 				}
-				gxy(5 , 13) , cout<<"Last modified by:			"<<last_modified_by;
+				gxy(5 , 13) , cout<<"Last modified by:			"<<last_modifier;
 				gxy(5 , 14) , cout<<"Made_transections:			"<<made_transection;
 			}
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////new
@@ -381,6 +393,10 @@ class bank_employee
 				gxy(5 , 7) , cout<<"Is Manager:			"<<is_manager;
 				gxy(5 , 8) , cout<<"accounts created:			"<<accounts_created;
 				gxy(5 , 9) , cout<<"Income per week:			"<<income_per_week;
+			}
+			long long int get_income_per_week()
+			{
+				return income_per_week;
 			}
 	//other functions:
 			void change_password(string new_password)
@@ -551,38 +567,131 @@ void create_new_customer(bank_employee current_employee)
 	wait(200);
 }
 
+void change_employers_own_account_details(bank_employee current_employee)
+{
+	string given_password;
+	system("cls");
+	drawboard();
+	gxy(10 , 2) , printf(">>>>>>>>>>>>>>	Password can not be changed here	<<<<<<<<<<<<<<<<<");
+    gxy(5 , 7) , printf("Enter current password: "); cin>>given_password;
+	if(current_employee.check_password(given_password)){
+		fstream file_pointer;
+		file_pointer.open("Employers_Record\\" + to_string(current_employee.get_employers_number()) + ".txt" , ios::in | ios::out);
+		string name , address , password , phone_number , city , province , country , temp;
+		char sex;
+		long long int weekly_income;
+		short int birth_date , birth_month , birth_year;
+		system("cls");
+		drawboard();
+		gxy(5 , 2),printf("Enter employer full name(50 words maximum): "); getline(cin , name);
+		while(name.size() == 0){
+			gxy(5 , 3) , printf("Enter Full name(Cannot be Empty): "); getline(cin , name);
+		}
+		gxy(5 , 4),printf("Enter employer phone_number(maximum 50 words) : ");getline(cin , phone_number);
+		while(phone_number.size() == 0 or isalpha(*phone_number.c_str())){
+			gxy(5 , 5) , printf("Enter valid Phone number:");getline(cin , phone_number);
+		}
+		gxy(5, 6), printf("enter employer address(50 words maximum): ");
+		getline(cin, address);
+		gxy(5, 7), printf("Enter employer city(maximum 20 words): ");
+		getline(cin, city);
+		gxy(5, 8), printf("Enter employer province(maximum 20 words): ");
+		getline(cin, province);
+		gxy(5, 9), printf("Enter employer country(maximum 50 words): ");
+		getline(cin, country);
+		gxy(5, 10), printf("Enter employer sex(M/F/T/O): ");
+		sex = getch();
+		while (sex != 'M' and sex != 'm' and sex != 'F' and sex != 'f' and sex != 'T' and sex != 't' and sex != 'O' and sex != 'o'){
+			gxy(5, 11), printf(">>>>>>>>\aEnter employer sex(M/F/T/O): ");
+			sex = getch();
+		}
+		gxy(5, 12), printf("Enter employer birth date(int. only): ");
+		cin >> temp;
+		if (!isalpha(*temp.c_str())){
+			birth_date = stoi(temp);
+		}
+		while (birth_date > 31 or birth_date < 1 or isalpha(*temp.c_str())){
+			gxy(5, 13), printf("Enter Employer Birthdate(can not be less than 1 and more than 31):                    \b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b");
+			cin >> temp;
+			if (!isalpha(*temp.c_str()))
+				birth_date = stoi(temp);
+		}
+
+		gxy(5, 14), printf("Enter employer birth month(int. only): ");
+		cin >> temp;
+		if (!isalpha(*temp.c_str())){
+			birth_month = stoi(temp);
+		}
+		while (birth_month > 31 or birth_month < 1 or isalpha(*temp.c_str())){
+			gxy(5, 15), printf("Enter Employer Birthmonth(can not be less than 1 and more than 12):                    \b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b");
+			cin >> temp;
+			if (!isalpha(*temp.c_str()))
+				birth_month = stoi(temp);
+		}
+
+		gxy(5, 16), printf("Enter employer birth year(int. only): ");
+		cin >> temp;
+		if (!isalpha(*temp.c_str())){
+			birth_year = stoi(temp);
+		}
+		while (birth_year > 2022 or birth_year < 1910 or isalpha(*temp.c_str())){
+			gxy(5, 17), printf("Enter Employer Birth year(can not be imaginary):                    \b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b");
+			cin >> temp;
+			if (!isalpha(*temp.c_str()))
+				birth_year = stoi(temp);
+		}
+		current_employee.set_everything(name , phone_number , given_password , address , city , province , country , sex , current_employee.get_income_per_week() , birth_date , birth_month , birth_year , current_employee.check_is_manager());
+		file_pointer.write((char*) &current_employee , sizeof(current_employee));
+		file_pointer.close();
+	}
+	else{
+		gxy(4 , 10), printf("Password not matched...");
+		wait(10);
+	}
+	gxy(6 , 19) , printf("Press any key to go to main menu");
+	getch();
+	wait(150);
+}
+
 void Remove_Customers_account()
 {
-    FILE *ptr1,*ptr2;
-    ptr1=fopen("CUSTOMERS.txt" , "r");
-    ptr2=fopen("temp.txt" , "w+");
-	system("cls");
-    //setcolor(04);
-    drawboard();
-    customers c1;
+	customers client;
 	char surity = 'n';
-    gxy(6,4),printf("Enter the Account Number that you want to remove: ");
-    long long int delacc,tmp;
-    cin>>delacc;
-    bool acc_find=0;
-    while(fread(&c1, sizeof(c1), 1, ptr1)){
-        tmp=c1.get_account_number();
-        if(tmp==delacc){
-            acc_find=999;
-			gxy(15 , 7),	cout<<"Are you sure to delete "<<c1.get_name()<<"'s name?(y/n): ";
+	long long int account_number,tmp;
+	fstream file_pointer , file_pointer_2;
+	bool acc_find=0;
+	file_pointer.open("CLIENTS_NUMBERS.TXT" , ios::in);
+	system("cls");
+    setcolor(04);
+    drawboard();
+    gxy(6,4),printf("Enter the Account Number that you want to modify: ");
+    cin>>tmp;
+    while(!file_pointer.eof()){
+		file_pointer>>account_number;
+        if(tmp==account_number){
+            acc_find=true;
+			file_pointer_2.open("Clients_Record\\" + to_string(account_number) + ".txt", ios::in);
+			file_pointer_2.read((char*) &client , sizeof(client));
+			gxy(15 , 7),	cout<<"Are you sure to delete "<<client.get_name()<<"'s account?(y/n): ";
 			surity = getch();
-			if(surity != 'Y' and surity != 'y'){
-				fwrite(&c1, sizeof(c1) ,1 , ptr2);
+			cin.ignore();
+			if(surity == 'y' or surity == 'Y'){
+			    file_pointer_2.close();
+                string location = "Clients_Record\\" + to_string(account_number) + ".txt";
+                int status = remove(location.c_str());
+				if(status == 0){
+					gxy(9 , 6) , cout<<client.get_name()<<"'s account removed successfully";
+				}
+				else{
+					gxy(9 , 6) , printf("There was a problem removing the file");cout<<"error_code: "<<status;
+				}
+			}
+			else{
+				gxy(2 , 6) , printf("Not removing the acocunt.");
 			}
         }
-        else{
-            fwrite(&c1, sizeof(c1) ,1 , ptr2);
-        }
     }
-    if(acc_find>0){
-		if(surity == 'y' or surity == 'Y'){
-			gxy(10,12),printf("Deleted the target account");
-		}
+    if(acc_find){
         gxy(10,14),printf("Press any key to go to main menu...\b");
 		getch();
         wait(500);
@@ -593,14 +702,68 @@ void Remove_Customers_account()
         char cho;
         cho=getch();
         if(cho=='Y'||cho=='y'){
-            fclose(ptr1);
-			fclose(ptr2);
+            file_pointer.close();
+			file_pointer_2.close();
             Remove_Customers_account();
         }
     }
-    fclose(ptr1),fclose(ptr2);
-    remove("CUSTOMERS.txt");
-    rename("temp.txt" , "CUSTOMERS.txt");
+	file_pointer.close();
+	file_pointer_2.close();
+}
+
+void deposit_into_customers_account(bank_employee current_employee)
+{
+	fstream file_pointer , file_pointer_2;
+	customers client;
+	long long int account_number , record_account_number ;
+	long double amount_to_deposit;
+	file_pointer.open("CLIENTS_NUMBERS.TXT" , ios::in);
+	bool found_account;
+	system("cls");
+	drawboard();
+	gxy(4 , 4) , printf("Enter the clients account number : ");
+	cin>>account_number;
+	while(!file_pointer.eof()){
+		file_pointer>>record_account_number;
+		if(record_account_number == account_number){
+			found_account = true;
+			file_pointer_2.open("Clients_Record\\" + to_string(account_number) + ".txt", ios::in);
+			file_pointer_2.read((char*) &client , sizeof(client));
+			gxy(4 , 6) , printf("[1] deposit into checking");
+			gxy(4 , 8) , printf("[2] deposit into saving");
+			gxy(4 , 10) , printf("Enter selection(1/2): ");
+			char ch;
+			ch = getch();
+			gxy(4 , 12) , printf("Enter amount to deposit into");
+			if(ch == '1'){
+				printf(" checking:");
+			}
+			else{
+				printf(" saving:");
+			}
+			cin >> amount_to_deposit;
+			if(ch == '1'){
+				client.deposit_into_checking(amount_to_deposit);
+				gxy(4 , 14) , printf("Diposited succcessfully in to checking account new balance : "); cout<<client.get_checking_amount();
+			}
+			else{
+				client.deposit_into_saving(amount_to_deposit);
+				gxy(3 , 14) , printf("Diposited succcessfully in to saving account new balance : "); cout<<client.get_saving_amount();
+			}
+			client.last_modified_by(current_employee.get_employers_number());
+			file_pointer_2.close();
+			file_pointer_2.open("Clients_Record\\" + to_string(account_number) + ".txt", ios::out);
+			file_pointer_2.write((char*) &client , sizeof(client));
+			file_pointer_2.close();
+			break;
+		}
+	}
+	if(found_account == false){
+		gxy(4 , 10) , printf("No Accounts found...");
+	}
+	gxy(10,16),printf("Press any key to go to main menu...\b");
+	getch();
+	wait(500);
 }
 
 void Modify_customers_account(bank_employee current_emplyoee)
@@ -680,10 +843,9 @@ void Modify_customers_account(bank_employee current_emplyoee)
 			}
         }
     }
-
 	system("cls");
 	drawboard();
-    if(acc_find>0){
+    if(acc_find){
 		if(surity == 'y' or surity == 'Y'){
 			gxy(10,12),printf("modified the target account");
 		}
@@ -766,12 +928,16 @@ void read_all_clients()
 		gxy(25 , 15) , printf("There is no client in your bank");
 	}
 	else{
-		for (i = 0; i < clients_numbers.size(); i++)
-		{
+		for (i = 0; i < clients_numbers.size(); i++){
 			data_base_file_pointer.open("Clients_Record\\" + to_string(clients_numbers[i]) + ".txt", ios::in);
-			data_base_file_pointer.read((char *)&temp_customer, sizeof(temp_customer));
-			gxy(2, i + 1), temp_customer.print_everything();
-			data_base_file_pointer.close();
+			if(data_base_file_pointer){
+				data_base_file_pointer.read((char *)&temp_customer, sizeof(temp_customer));
+				gxy(2, i + 1), temp_customer.print_everything();
+				data_base_file_pointer.close();
+			}
+			else{
+				gxy(2 , i+1), cout<<"Account Number :"<<clients_numbers[i]<<"		>>>>>>>>>>>deleted";
+			}
 		}
 	}
 	gxy(5 , 20) , printf("Press any key to go to main menu again...\b");
@@ -822,7 +988,7 @@ void create_employee()
 {
 	vector<long long int> others_numbers ;
 	bank_employee temp_employer , new_employer;
-	string name , address , password , phone_number , city , province , country;
+	string name , address , password , phone_number , city , province , country , temp;
 	char sex;
 	long long int employers_numbers_from_index = 1 , weekly_income;
 	short int birth_date , birth_month , birth_year;
@@ -837,7 +1003,6 @@ void create_employee()
 		}
 	}
 	if(have_record){
-		cin.ignore();
 	}
 	else{
 		is_manager = true;
@@ -860,22 +1025,48 @@ void create_employee()
 	while(sex!= 'M' and sex!= 'm' and sex!= 'F' and sex!= 'f' and sex!= 'T' and sex!= 't' and sex!= 'O' and sex!= 'o'){
 		gxy(5 , 11),printf(">>>>>>>>\aEnter employer sex(M/F/T/O): "); sex = getch();
 	}
-	gxy(5 , 12),printf("Enter employer birth date(int. only): "); cin>>birth_date;
-	while(birth_date>31 or birth_date < 1){
-		gxy(5 , 13) ,printf("Enter Employer Birthdate(can not be less than 0 and more than 31):                    \b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b") ;
-		cin>>birth_date;
+	gxy(5 , 12),printf("Enter employer birth date(int. only): "); cin>>temp;
+	if(!isalpha(*temp.c_str())){
+		birth_date = stoi(temp);
 	}
-	gxy(5 , 14),printf("Enter employer birth month(int. only): "); cin>>birth_month;
-	while(birth_month>12 or birth_date < 1){
-		gxy(5 , 15) ,printf("Enter employer BirthMonth(can not be less than 0):                    \b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b");
-		cin>>birth_month;
+	while(birth_date>31 or birth_date < 1 or isalpha(*temp.c_str())){
+		gxy(5 , 13) ,printf("Enter Employer Birthdate(can not be less than 1 and more than 31):                    \b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b") ;
+		cin>>temp;
+		if(!isalpha(*temp.c_str()))
+			birth_date = stoi(temp);
 	}
-	gxy(5 , 16),printf("Enter employer birth year(int. only): "); cin>>birth_year;
-	while(birth_year>2022 or birth_year < 1910){
-		gxy(5 , 17) ,printf("Enter Emplyoer BirthYear(can not be imaginary):                    \b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b");
-		cin>>birth_year;
+
+	gxy(5 , 14),printf("Enter employer birth month(int. only): "); cin>>temp;
+	if(!isalpha(*temp.c_str())){
+		birth_month = stoi(temp);
 	}
-	gxy(5 , 18),printf("Enter employer weekly wage(int. only): "); cin>>weekly_income;
+	while(birth_month>31 or birth_month < 1 or isalpha(*temp.c_str())){
+		gxy(5 , 15) ,printf("Enter Employer Birthmonth(can not be less than 1 and more than 12):                    \b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b") ;
+		cin>>temp;
+		if(!isalpha(*temp.c_str()))
+			birth_month = stoi(temp);
+	}
+
+	gxy(5 , 16),printf("Enter employer birth year(int. only): "); cin>>temp;
+	if(!isalpha(*temp.c_str())){
+		birth_year = stoi(temp);
+	}
+	while(birth_year>2022 or birth_year < 1910 or isalpha(*temp.c_str())){
+		gxy(5 , 17) ,printf("Enter Employer Birth year(can not be imaginary):                    \b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b") ;
+		cin>>temp;
+		if(!isalpha(*temp.c_str()))
+			birth_year = stoi(temp);
+	}
+	gxy(5 , 18),printf("Enter employer weekly wage(int. only): "); cin>>temp;
+	if(!isalpha(*temp.c_str())){
+		weekly_income = stoi(temp);
+	}
+	while(isalpha(*temp.c_str())){
+		gxy(5 , 18) ,printf("Weekly income can not be imaginary:                    \b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b") ;
+		cin>>temp;
+		if(!isalpha(*temp.c_str()))
+			weekly_income = stoi(temp);
+	}
 	gxy(5 , 19),printf("Enter password(password should be atleast 8 words and have numbers and alpphabets): "); cin.ignore(); getline(cin , password);
 	while(check_password(password)){
 		gxy(2 , 20),printf("\b\b\a>>>>>>>>>>>>>>Enter password(password should be atleast 8 words and have numbers and alpphabets):                \b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b"); getline(cin , password);
@@ -1019,12 +1210,20 @@ void main_menu(bank_employee current_employee)
 						show_full_account_details();
 						break;
 		}
+		case '5' :{
+						deposit_into_customers_account(current_employee);
+						break;
+		}
 		case '6' : {
 						created_accounts_by_the_user(current_employee);
 						break;
 		}
 		case '7' :	{
 						change_employee_password(current_employee);
+						break;
+		}
+		case '8' :	{
+						change_employers_own_account_details(current_employee);
 						break;
 		}
 		case '9' :	{
@@ -1128,12 +1327,20 @@ void main_menu_for_managers(bank_employee current_employee)
 						show_full_account_details();
 						break;
 		}
+		case '5' :{
+						deposit_into_customers_account(current_employee);
+						break;
+		}
 		case '6' : {
 						created_accounts_by_the_user(current_employee);
 						break;
 		}
 		case '7' :	{
 						change_employee_password(current_employee);
+						break;
+		}
+		case '8' :	{
+						change_employers_own_account_details(current_employee);
 						break;
 		}
 		case '9' :	{
