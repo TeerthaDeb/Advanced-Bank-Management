@@ -134,7 +134,7 @@ private:
 private:
 	// variables:
 	bool active_status = true;
-	char name[50], address[20], phone_number[50], sex, password[50], city[50], province[50], country[50], account_create_date[100], last_account_modification[100];
+	char name[50], address[20], phone_number[50], sex, password[50], city[50], province[50], country[50], account_create_date[100], last_account_modification_date[100];
 	double checking_amount = 0, saving_amount = 0, visa_amount = 0, interest_rate, points = 0, loans = 0;
 	long long int account_number = 100000000 + (rand() % 899999999), visa_number = 1000000000 + (rand() % 8999999999), account_creators_id = 0, employee_number = 0, last_modifier = 0;
 	bool have_visa = 0, is_employee = false;
@@ -244,7 +244,7 @@ public:
 	}
 	void set_account_modification_date()
 	{
-		strcpy(last_account_modification, date_time_function().c_str());
+		strcpy(last_account_modification_date, date_time_function().c_str());
 	}
 	void enable_account_status()
 	{
@@ -310,6 +310,18 @@ public:
 	{
 		return saving_amount;
 	}
+	bool get_active_status()
+	{
+		return active_status;
+	}
+	string get_last_modification_date()
+	{
+		return last_account_modification_date;
+	}
+	long long int get_last_modifiers_number()
+	{
+		return last_modifier;
+	}
 	// others:
 	void request_for_visa(long long int last_modifier_id)
 	{
@@ -360,7 +372,7 @@ public:
 		gxy(5, 13), cout << "Last modified by:			" << last_modifier;
 		gxy(5, 14), cout << "Made_transections:			" << made_transection;
 		gxy(5, 15), cout << "Account created on:		" << account_create_date;
-		gxy(5, 16), cout << "Last modified on:			" << last_account_modification;
+		gxy(5, 16), cout << "Last modified on:			" << last_account_modification_date;
 	}
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////new
 	// getters
@@ -798,13 +810,27 @@ void Disable_Customers_account(bank_employee current_employee)
 			acc_find = true;
 			file_pointer_2.open("Clients_Record\\" + to_string(account_number) + ".txt", ios::in);
 			file_pointer_2.read((char *)&client, sizeof(client));
-			gxy(15, 7), cout << "Are you sure to disable " << client.get_name() << "'s account?(y/n): ";
+			if (client.get_active_status())
+			{
+				gxy(15, 7), cout << "Are you sure to disable " << client.get_name() << "'s account?(y/n): ";
+			}
+			else
+			{
+				gxy(15, 7), cout << "Are you sure to enable " << client.get_name() << "'s account?(y/n): ";
+			}
 			surity = getch();
 			cin.ignore();
 			if (surity == 'y' or surity == 'Y')
 			{
 				file_pointer_2.close();
-				client.disable_account_status();
+				if (client.get_active_status())
+				{
+					client.disable_account_status();
+				}
+				else
+				{
+					client.enable_account_status();
+				}
 				client.last_modified_by(current_employee.get_employers_number());
 				client.set_account_modification_date();
 				file_pointer_2.open("Clients_Record\\" + to_string(account_number) + ".txt", ios::out);
@@ -819,6 +845,14 @@ void Disable_Customers_account(bank_employee current_employee)
 	}
 	if (acc_find)
 	{
+		if (client.get_active_status())
+		{
+			gxy(10, 12), printf("Enabled Successfully");
+		}
+		else
+		{
+			gxy(10, 12), printf("Disabled Successfully");
+		}
 		gxy(10, 14), printf("Press any key to go to main menu...\b");
 		getch();
 		wait(500);
@@ -1098,12 +1132,19 @@ void read_all_clients()
 			if (data_base_file_pointer)
 			{
 				data_base_file_pointer.read((char *)&temp_customer, sizeof(temp_customer));
-				gxy(2, i + 1), temp_customer.print_everything();
+				if (temp_customer.get_active_status())
+				{
+					gxy(2, i + 1), temp_customer.print_everything();
+				}
+				else
+				{
+					gxy(2, i + 1), cout << "Account Number :" << clients_numbers[i] << "			Disabled on " << temp_customer.get_last_modification_date() << " by " << temp_customer.get_last_modifiers_number();
+				}
 				data_base_file_pointer.close();
 			}
 			else
 			{
-				gxy(2, i + 1), cout << "Account Number :" << clients_numbers[i] << "		>>>>>>>>>>>deleted";
+				gxy(2, i + 1), cout << "Account Number :" << clients_numbers[i] << "Not found !!!";
 			}
 		}
 	}
@@ -1397,7 +1438,7 @@ main_menu_start2:
 	gxy(30, 4), printf("[0] create a client account");
 	gxy(30, 5), printf("[1] show accounts");
 	gxy(30, 6), printf("[2] modify an account");
-	gxy(30, 7), printf("[3] delete an account");
+	gxy(30, 7), printf("[3] Disable an account");
 	gxy(30, 8), printf("[4] show full details of an account");
 	gxy(30, 9), printf("[5] deposit money into an account");
 	gxy(width / 2 - 30, 11), printf("###################	  your account  	###################");
@@ -1526,7 +1567,7 @@ main_menu_start:
 	gxy(30, 4), printf("[0] create a client account");		   // done
 	gxy(30, 5), printf("[1] show accounts");				   // done
 	gxy(30, 6), printf("[2] modify an account");			   // done
-	gxy(30, 7), printf("[3] delete an account");			   // done
+	gxy(30, 7), printf("[3] Disable/Enable an account");	   // done
 	gxy(30, 8), printf("[4] show full details of an account"); // done
 	gxy(30, 9), printf("[5] deposit money into an account");   // done
 	gxy(width / 2 - 30, 11), printf("###################	  your account  	###################");
