@@ -10,7 +10,10 @@ short int height = 28, width = 118, password_change_fake_try = 0; ////// height 
 bool access_granted = false, have_record = true;
 const double default_interest_rate = 10 / 100; // per year
 // Just for modification of the database : CLIENTS_NUMBERS.TXT and EMPLOYERS_INDEX.TXT
-
+// location of clients index		: "C:\\Users\\Public\\Documents\\TDsoftwares\\Advanced_Bank_Management_System\\CLIENTS_NUMBERS.TXT"
+// location of indivisual client   	: "C:\\Users\\Public\\Documents\\TDsoftwares\\Advanced_Bank_Management_System\\Clients_Record\\" + to_string(new_customer.get_account_number()) + ".txt
+// location of employers index 		: "C:\\Users\\Public\\Documents\\TDsoftwares\\Advanced_Bank_Management_System\\EMPLOYERS_INDEX.TXT"
+// location of indivisual  employer : "C:\\Users\\Public\\Documents\\TDsoftwares\\Advanced_Bank_Management_System\\Employers_Record\\" + to_string(current_employee.get_employers_number()) + ".txt"
 string date_time_function()
 {
 	time_t rawtime;
@@ -576,6 +579,8 @@ bool check_in_others_numbers(long long int new_number, vector<long long int> exi
 	return false;
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////// 	ALL working function starts here
+
 void create_new_customer(bank_employee current_employee)
 {
 	char choice, sex;
@@ -588,7 +593,10 @@ void create_new_customer(bank_employee current_employee)
 	long long int customer_employee_number, number;
 	short int birth_date, birth_month, birth_year;
 	fstream file_pointer, database_file_pointer;
-	file_pointer.open("CLIENTS_NUMBERS.TXT", ios::in);
+	system("cls");
+	system("Color F9");
+	drawboard();
+	file_pointer.open("C:\\Users\\Public\\Documents\\TDsoftwares\\Advanced_Bank_Management_System\\CLIENTS_NUMBERS.TXT", ios::binary | ios::in);
 	while (!file_pointer.eof())
 	{
 		file_pointer >> number;
@@ -599,8 +607,7 @@ void create_new_customer(bank_employee current_employee)
 		other_customers_bank_number.push_back(number);
 	}
 	file_pointer.close();
-	system("cls");
-	drawboard();
+
 	gxy(2, 2), printf("Enter Customer name: "), getline(cin, name);
 	while (name.size() == 0)
 	{
@@ -679,15 +686,15 @@ void create_new_customer(bank_employee current_employee)
 	gxy(5, 6);
 	new_customer.print_every_details_for_customer();
 	gxy(30, 25), printf(">>>>>>>>>>>>>>>>>>Account Number : 	"), cout << new_customer.get_account_number();
-	file_pointer.open("CLIENTS_NUMBERS.TXT", ios::app);
+	file_pointer.open("C:\\Users\\Public\\Documents\\TDsoftwares\\Advanced_Bank_Management_System\\CLIENTS_NUMBERS.TXT", ios::binary | ios::app);
 	file_pointer << '\n'
 				 << new_customer.get_account_number();
 	file_pointer.close();
-	database_file_pointer.open("Clients_Record\\" + to_string(new_customer.get_account_number()) + ".txt", ios::out);
-	database_file_pointer.write((char *)&new_customer, sizeof(new_customer));
+	database_file_pointer.open("C:\\Users\\Public\\Documents\\TDsoftwares\\Advanced_Bank_Management_System\\Clients_Record\\" + to_string(new_customer.get_account_number()) + ".txt", ios::binary | ios::out);
+	database_file_pointer.write(reinterpret_cast<char *>(&new_customer), sizeof(new_customer));
 	database_file_pointer.close();
-	database_file_pointer.open("Employers_Record\\" + to_string(current_employee.get_employers_number()) + ".txt", ios::out);
-	database_file_pointer.write((char *)&current_employee, sizeof(current_employee));
+	database_file_pointer.open("C:\\Users\\Public\\Documents\\TDsoftwares\\Advanced_Bank_Management_System\\Employers_Record\\" + to_string(current_employee.get_employers_number()) + ".txt", ios::binary | ios::out);
+	database_file_pointer.write(reinterpret_cast<char *>(&current_employee), sizeof(current_employee));
 	database_file_pointer.close();
 	gxy(5, 20), printf("Press any key to go to main menu again...\b");
 	getch();
@@ -706,7 +713,7 @@ void change_employers_own_account_details(bank_employee current_employee)
 	if (current_employee.check_password(given_password))
 	{
 		fstream file_pointer;
-		file_pointer.open("Employers_Record\\" + to_string(current_employee.get_employers_number()) + ".txt", ios::in | ios::out);
+		file_pointer.open("C:\\Users\\Public\\Documents\\TDsoftwares\\Advanced_Bank_Management_System\\Employers_Record\\" + to_string(current_employee.get_employers_number()) + ".txt", ios::binary | ios::out);
 		string name, address, password, phone_number, city, province, country, temp;
 		char sex;
 		long long int weekly_income;
@@ -784,7 +791,7 @@ void change_employers_own_account_details(bank_employee current_employee)
 		gxy(5, 17), printf("Enter your salary per week(default = %d) : ", current_employee.get_income_per_week());
 		cin >> weekly_income;
 		current_employee.set_everything(name, phone_number, given_password, address, city, province, country, sex, weekly_income, birth_date, birth_month, birth_year, current_employee.check_is_manager());
-		file_pointer.write((char *)&current_employee, sizeof(current_employee));
+		file_pointer.write(reinterpret_cast<char *>(&current_employee), sizeof(current_employee));
 		file_pointer.close();
 		gxy(5, 20), printf("Editing done...");
 	}
@@ -805,9 +812,9 @@ void Disable_Customers_account(bank_employee current_employee)
 	long long int account_number, tmp;
 	fstream file_pointer, file_pointer_2;
 	bool acc_find = 0;
-	file_pointer.open("CLIENTS_NUMBERS.TXT", ios::in);
+	file_pointer.open("C:\\Users\\Public\\Documents\\TDsoftwares\\Advanced_Bank_Management_System\\CLIENTS_NUMBERS.TXT", ios::in);
 	system("cls");
-	setcolor(04);
+	system("Color 4F");
 	drawboard();
 	gxy(6, 4), printf("Enter the Account Number that you want to modify: ");
 	cin >> tmp;
@@ -817,8 +824,8 @@ void Disable_Customers_account(bank_employee current_employee)
 		if (tmp == account_number)
 		{
 			acc_find = true;
-			file_pointer_2.open("Clients_Record\\" + to_string(account_number) + ".txt", ios::in);
-			file_pointer_2.read((char *)&client, sizeof(client));
+			file_pointer_2.open("C:\\Users\\Public\\Documents\\TDsoftwares\\Advanced_Bank_Management_System\\Clients_Record\\" + to_string(account_number) + ".txt", ios::in);
+			file_pointer_2.read(reinterpret_cast<char *>(&client), sizeof(client));
 			if (client.get_active_status())
 			{
 				gxy(15, 7), cout << "Are you sure to disable " << client.get_name() << "'s account?(y/n): ";
@@ -842,8 +849,8 @@ void Disable_Customers_account(bank_employee current_employee)
 				}
 				client.last_modified_by(current_employee.get_employers_number());
 				client.set_account_modification_date();
-				file_pointer_2.open("Clients_Record\\" + to_string(account_number) + ".txt", ios::out);
-				file_pointer_2.write((char *)&client, sizeof(client));
+				file_pointer_2.open("C:\\Users\\Public\\Documents\\TDsoftwares\\Advanced_Bank_Management_System\\Clients_Record\\" + to_string(account_number) + ".txt", ios::out);
+				file_pointer_2.write(reinterpret_cast<char *>(&client), sizeof(client));
 				file_pointer_2.close();
 			}
 			else
@@ -889,7 +896,7 @@ void deposit_into_customers_account(bank_employee current_employee)
 	customers client;
 	long long int account_number, record_account_number;
 	long double amount_to_deposit;
-	file_pointer.open("CLIENTS_NUMBERS.TXT", ios::in);
+	file_pointer.open("C:\\Users\\Public\\Documents\\TDsoftwares\\Advanced_Bank_Management_System\\CLIENTS_NUMBERS.TXT", ios::in);
 	bool found_account;
 	system("cls");
 	drawboard();
@@ -901,23 +908,48 @@ void deposit_into_customers_account(bank_employee current_employee)
 		if (record_account_number == account_number)
 		{
 			found_account = true;
-			file_pointer_2.open("Clients_Record\\" + to_string(account_number) + ".txt", ios::in);
-			file_pointer_2.read((char *)&client, sizeof(client));
+			file_pointer_2.open("C:\\Users\\Public\\Documents\\TDsoftwares\\Advanced_Bank_Management_System\\Clients_Record\\" + to_string(account_number) + ".txt", ios::in);
+			file_pointer_2.read(reinterpret_cast<char *>(&client), sizeof(client));
 			gxy(4, 6), printf("[1] deposit into checking");
 			gxy(4, 8), printf("[2] deposit into saving");
 			gxy(4, 10), printf("Enter selection(1/2): ");
 			char ch;
+		select_again:
 			ch = getch();
+		again_deposit:
 			gxy(4, 12), printf("Enter amount to deposit into");
 			if (ch == '1')
 			{
-				printf(" checking:");
+				printf(" checking:                    \b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b");
+			}
+			else if (ch == '2')
+			{
+				printf(" saving:                    \b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b");
 			}
 			else
 			{
-				printf(" saving:");
+				gxy(8, 12), printf("                                        \b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\bWrong Keyword. Going to selection again.");
+				wait(300);
+				gxy(1, 12), printf("                                                                                \b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b");
+				gxy(4, 10), printf("Enter selection(1/2):    \b\b\b");
+				goto select_again;
 			}
 			cin >> amount_to_deposit;
+			if (amount_to_deposit < 0)
+			{
+				gxy(6, 13), printf("Are you sure you want to deduct money from the account?(y/n) : ");
+				char desition;
+				cin >> desition;
+				if (desition == 'n' or desition == 'N')
+				{
+					gxy(6, 13);
+					for (int i = 0; i < sizeof("Are you sure you want to deduct money from the account?(y/n) : "); i++)
+						printf(" ");
+					for (int i = 0; i < sizeof("Are you sure you want to deduct money from the account?(y/n) : "); i++)
+						printf("\b");
+					goto again_deposit;
+				}
+			}
 			if (ch == '1')
 			{
 				client.deposit_into_checking(amount_to_deposit);
@@ -932,8 +964,8 @@ void deposit_into_customers_account(bank_employee current_employee)
 			}
 			client.last_modified_by(current_employee.get_employers_number());
 			file_pointer_2.close();
-			file_pointer_2.open("Clients_Record\\" + to_string(account_number) + ".txt", ios::out);
-			file_pointer_2.write((char *)&client, sizeof(client));
+			file_pointer_2.open("C:\\Users\\Public\\Documents\\TDsoftwares\\Advanced_Bank_Management_System\\Clients_Record\\" + to_string(account_number) + ".txt", ios::out);
+			file_pointer_2.write(reinterpret_cast<char *>(&client), sizeof(client));
 			file_pointer_2.close();
 			break;
 		}
@@ -950,11 +982,12 @@ void deposit_into_customers_account(bank_employee current_employee)
 void Modify_customers_account(bank_employee current_emplyoee)
 {
 	fstream file_pointer, file_pointer_2;
-	file_pointer.open("CLIENTS_NUMBERS.TXT", ios::in);
+	file_pointer.open("C:\\Users\\Public\\Documents\\TDsoftwares\\Advanced_Bank_Management_System\\CLIENTS_NUMBERS.TXT", ios::in);
 	char surity = 'n';
 	long long int account_number = 0, tmp;
 	bool acc_find = false;
 	system("cls");
+	system("Color E0");
 	drawboard();
 	gxy(6, 4), printf("Enter the Account Number that you want to modify: ");
 	cin >> tmp;
@@ -965,11 +998,10 @@ void Modify_customers_account(bank_employee current_emplyoee)
 		{
 			acc_find = true;
 			customers client;
-			file_pointer_2.open("Clients_Record\\" + to_string(account_number) + ".txt", ios::in);
-			file_pointer_2.read((char *)&client, sizeof(client));
+			file_pointer_2.open("C:\\Users\\Public\\Documents\\TDsoftwares\\Advanced_Bank_Management_System\\Clients_Record\\" + to_string(account_number) + ".txt", ios::in);
+			file_pointer_2.read(reinterpret_cast<char *>(&client), sizeof(client));
 			gxy(15, 7), cout << "Are you sure to modify " << client.get_name() << "'s account?(y/n): ";
 			surity = getch();
-			cin.ignore();
 			if (surity == 'Y' or surity == 'y')
 			{
 				string name, address, city, province, country, phone_number;
@@ -1033,8 +1065,8 @@ void Modify_customers_account(bank_employee current_emplyoee)
 				client.last_modified_by(current_emplyoee.get_employers_number());
 				client.set_account_modification_date();
 				file_pointer_2.close();
-				file_pointer_2.open("Clients_Record\\" + to_string(account_number) + ".txt", ios::out);
-				file_pointer_2.write((char *)&client, sizeof(client));
+				file_pointer_2.open("C:\\Users\\Public\\Documents\\TDsoftwares\\Advanced_Bank_Management_System\\Clients_Record\\" + to_string(account_number) + ".txt", ios::out);
+				file_pointer_2.write(reinterpret_cast<char *>(&client), sizeof(client));
 			}
 		}
 	}
@@ -1076,7 +1108,7 @@ void show_full_account_details()
 	gxy(6, 4), printf("Enter the account number to show full info of the account: ");
 	cin >> temp_number;
 	fstream file_pointer;
-	file_pointer.open("CLIENTS_NUMBERS.TXT", ios::in);
+	file_pointer.open("C:\\Users\\Public\\Documents\\TDsoftwares\\Advanced_Bank_Management_System\\CLIENTS_NUMBERS.TXT", ios::in);
 	gxy(6, 7), printf("Searching");
 	while (!file_pointer.eof())
 	{
@@ -1088,8 +1120,8 @@ void show_full_account_details()
 			drawboard();
 			customers client;
 			file_pointer.close();
-			file_pointer.open("Clients_Record\\" + to_string(account_number) + ".txt", ios::in);
-			file_pointer.read((char *)&client, sizeof(client));
+			file_pointer.open("C:\\Users\\Public\\Documents\\TDsoftwares\\Advanced_Bank_Management_System\\Clients_Record\\" + to_string(account_number) + ".txt", ios::in);
+			file_pointer.read(reinterpret_cast<char *>(&client), sizeof(client));
 			client.print_every_details_for_customer();
 			break;
 		}
@@ -1113,11 +1145,11 @@ void show_full_account_details()
 
 void read_all_clients()
 {
-	long long int temp_number, i;
+	long long int temp_number, i, j;
 	vector<long long int> clients_numbers;
 	customers temp_customer;
 	fstream file_pointer, data_base_file_pointer;
-	file_pointer.open("CLIENTS_NUMBERS.TXT", ios::in);
+	file_pointer.open("C:\\Users\\Public\\Documents\\TDsoftwares\\Advanced_Bank_Management_System\\CLIENTS_NUMBERS.TXT", ios::in);
 	while (!file_pointer.eof())
 	{
 		file_pointer >> temp_number;
@@ -1128,7 +1160,9 @@ void read_all_clients()
 		clients_numbers.push_back(temp_number);
 	}
 	file_pointer.close();
+	sort(clients_numbers.begin(), clients_numbers.end()), clients_numbers.erase(unique(clients_numbers.begin(), clients_numbers.end()), clients_numbers.end()); // Removes Duplicates...
 	system("cls");
+	system("Color 0E");
 	drawboard();
 	if (clients_numbers.size() == 0)
 	{
@@ -1136,19 +1170,19 @@ void read_all_clients()
 	}
 	else
 	{
-		for (i = 0; i < clients_numbers.size(); i++)
+		for (i = j = 0; i < clients_numbers.size(); i++, j++)
 		{
-			data_base_file_pointer.open("Clients_Record\\" + to_string(clients_numbers[i]) + ".txt", ios::in);
+			data_base_file_pointer.open("C:\\Users\\Public\\Documents\\TDsoftwares\\Advanced_Bank_Management_System\\Clients_Record\\" + to_string(clients_numbers[i]) + ".txt", ios::in);
 			if (data_base_file_pointer)
 			{
 				data_base_file_pointer.read((char *)&temp_customer, sizeof(temp_customer));
 				if (temp_customer.get_active_status())
 				{
-					gxy(2, i + 1), temp_customer.print_everything();
+					gxy(2, j + 1), temp_customer.print_everything();
 				}
 				else
 				{
-					gxy(2, i + 1), cout << "Account Number :" << clients_numbers[i] << "			Disabled on " << temp_customer.get_last_modification_date() << " by " << temp_customer.get_last_modifiers_number();
+					gxy(2, j + 1), cout << "Account Number :" << clients_numbers[i] << "			Disabled on " << temp_customer.get_last_modification_date() << " by " << temp_customer.get_last_modifiers_number();
 				}
 				data_base_file_pointer.close();
 			}
@@ -1156,11 +1190,19 @@ void read_all_clients()
 			{
 				gxy(2, i + 1), cout << "Account Number :" << clients_numbers[i] << "Not found !!!";
 			}
+			if (j == 18 and i < clients_numbers.size() - 1)
+			{
+				gxy(7, 22), printf("Press any key to show next clients...\b");
+				getch();
+				j = 0;
+				system("cls");
+				drawboard();
+			}
 		}
 	}
-	gxy(5, 20), printf("Press any key to go to main menu again...\b");
+	gxy(5, 22), printf("Press any key to go to main menu again...\b");
 	getch();
-	gxy(5, 21), printf("Going to main menu");
+	gxy(5, 23), printf("Going to main menu");
 	wait(200);
 }
 
@@ -1172,7 +1214,7 @@ void created_accounts_by_the_user(bank_employee current_employee)
 	customers client;
 	bool account_found = false;
 	long long int temp_client_number;
-	file_pointer.open("CLIENTS_NUMBERS.TXT", ios::in);
+	file_pointer.open("C:\\Users\\Public\\Documents\\TDsoftwares\\Advanced_Bank_Management_System\\CLIENTS_NUMBERS.TXT", ios::in);
 	system("cls");
 	drawboard();
 	while (!file_pointer.eof())
@@ -1186,9 +1228,11 @@ void created_accounts_by_the_user(bank_employee current_employee)
 	}
 	file_pointer.close();
 
+	sort(clients_numbers.begin(), clients_numbers.end()), clients_numbers.erase(unique(clients_numbers.begin(), clients_numbers.end()), clients_numbers.end()); // Removes Duplicates...
+
 	for (i = 0; clients_numbers.size() > i; i++)
 	{
-		data_base_file_pointer.open("Clients_Record\\" + to_string(clients_numbers[i]) + ".txt", ios::in);
+		data_base_file_pointer.open("C:\\Users\\Public\\Documents\\TDsoftwares\\Advanced_Bank_Management_System\\Clients_Record\\" + to_string(clients_numbers[i]) + ".txt", ios::in);
 		data_base_file_pointer.read((char *)&client, sizeof(client));
 		if (current_employee.get_employers_number() == client.get_account_creators_id())
 		{
@@ -1213,7 +1257,7 @@ void change_employee_password(bank_employee current_employee)
 	bank_employee temp_employer;
 	long long int target_employee_index = 0, i;
 	fstream file_pointer;
-	file_pointer.open("Employers_Record\\" + to_string(current_employee.get_employers_number()) + ".txt", ios::in | ios::out);
+	file_pointer.open("C:\\Users\\Public\\Documents\\TDsoftwares\\Advanced_Bank_Management_System\\Employers_Record\\" + to_string(current_employee.get_employers_number()) + ".txt", ios::in | ios::out);
 	system("cls");
 	drawboard();
 	gxy(5, 7), printf("Enter current password: ");
@@ -1228,7 +1272,7 @@ void change_employee_password(bank_employee current_employee)
 			getline(cin, given_password);
 		}
 		current_employee.change_password(given_password);
-		file_pointer.write((char *)&current_employee, sizeof(current_employee));
+		file_pointer.write(reinterpret_cast<char *>(&current_employee), sizeof(current_employee));
 		file_pointer.close();
 		gxy(5, 15), printf("Changed Password Succesfully");
 	}
@@ -1260,6 +1304,7 @@ void main_menu(bank_employee current_employee)
 {
 	char main_menu_choice;
 main_menu_start2:
+	system("Color F0");
 	system("cls");
 	drawboard();
 	gxy(width / 2 - 30, 1), printf(">>>>>>>>>>>>>>>>>>>>>>	 Main Menu	<<<<<<<<<<<<<<<<<<<<<<<<<");
@@ -1346,7 +1391,7 @@ void read_all_employees()
 	long long int number, i, j;
 	vector<long long int> employee_numbers;
 	fstream file_pointer, database_file_pointer;
-	file_pointer.open("EMPLOYERS_INDEX.TXT", ios::in);
+	file_pointer.open("C:\\Users\\Public\\Documents\\TDsoftwares\\Advanced_Bank_Management_System\\EMPLOYERS_INDEX.TXT", ios::in);
 	while (!file_pointer.eof())
 	{
 		file_pointer >> number;
@@ -1362,8 +1407,8 @@ void read_all_employees()
 	for (i = j = 0; i < employee_numbers.size(); i++, j++)
 	{
 		number = employee_numbers[i];
-		database_file_pointer.open("Employers_Record\\" + to_string(number) + ".txt", ios::in);
-		database_file_pointer.read((char *)&temp_employer, sizeof(temp_employer));
+		database_file_pointer.open("C:\\Users\\Public\\Documents\\TDsoftwares\\Advanced_Bank_Management_System\\Employers_Record\\" + to_string(number) + ".txt", ios::in);
+		database_file_pointer.read(reinterpret_cast<char *>(&temp_employer), sizeof(temp_employer));
 		gxy(2, j + 1), temp_employer.print_every_thing();
 		database_file_pointer.close();
 		if (j == 18 and i < employee_numbers.size() - 1)
@@ -1384,7 +1429,7 @@ void read_all_employees()
 void show_full_details_of_an_employee()
 {
 	fstream file_pointer;
-	file_pointer.open("EMPLOYERS_INDEX.TXT", ios::in);
+	file_pointer.open("C:\\Users\\Public\\Documents\\TDsoftwares\\Advanced_Bank_Management_System\\EMPLOYERS_INDEX.TXT", ios::in);
 	bank_employee employee;
 	long long int employee_number, index_number;
 	bool found_employee = false;
@@ -1400,8 +1445,8 @@ void show_full_details_of_an_employee()
 		{
 			found_employee = true;
 			fstream database_file_pointer;
-			database_file_pointer.open("Employers_Record\\" + to_string(employee_number) + ".txt", ios::in);
-			database_file_pointer.read((char *)&employee, sizeof(employee));
+			database_file_pointer.open("C:\\Users\\Public\\Documents\\TDsoftwares\\Advanced_Bank_Management_System\\Employers_Record\\" + to_string(employee_number) + ".txt", ios::in);
+			database_file_pointer.read(reinterpret_cast<char *>(&employee), sizeof(employee));
 			database_file_pointer.close();
 			system("cls");
 			drawboard();
@@ -1429,11 +1474,12 @@ void show_full_details_of_an_employee()
 void modify_an_employees_account()
 {
 	fstream file_pointer;
-	file_pointer.open("EMPLOYERS_INDEX.TXT", ios::in);
+	file_pointer.open("C:\\Users\\Public\\Documents\\TDsoftwares\\Advanced_Bank_Management_System\\EMPLOYERS_INDEX.TXT", ios::in);
 	bank_employee employee;
 	long long int employee_number, index_number;
 	bool found_employee = false;
 	system("cls");
+	system("Color E0");
 	drawboard();
 	gxy(6, 4), printf("Enter the account number to edit details: ");
 	cin >> employee_number;
@@ -1448,7 +1494,7 @@ void modify_an_employees_account()
 			gxy(5, 10), printf("Enter employer password: ");
 			cin >> given_password;
 			fstream database_file_pointer;
-			database_file_pointer.open("Employers_Record\\" + to_string(employee_number) + ".txt", ios::in);
+			database_file_pointer.open("C:\\Users\\Public\\Documents\\TDsoftwares\\Advanced_Bank_Management_System\\Employers_Record\\" + to_string(employee_number) + ".txt", ios::in);
 			database_file_pointer.read((char *)&employee, sizeof(employee));
 			database_file_pointer.close();
 			if (employee.check_password(given_password))
@@ -1564,12 +1610,13 @@ void modify_an_employees_account()
 void delete_an_employee()
 {
 	fstream file_pointer, data_base_file_pointer;
-	file_pointer.open("EMPLOYERS_INDEX.TXT", ios::in);
+	file_pointer.open("C:\\Users\\Public\\Documents\\TDsoftwares\\Advanced_Bank_Management_System\\EMPLOYERS_INDEX.TXT", ios::in);
 	bank_employee employee;
 	long long int employee_number, index_number, i;
 	bool found_employee = false;
 	vector<long long int> to_be_saved_employee_numbers;
 	system("cls");
+	system("Color 4F");
 	drawboard();
 	gxy(6, 4), printf("Enter the account number to delete: ");
 	cin >> employee_number;
@@ -1582,14 +1629,14 @@ void delete_an_employee()
 			found_employee = true;
 			string given_password;
 			gxy(5, 10), printf("Enter employer password: ");
-			data_base_file_pointer.open("Employers_Record\\" + to_string(employee_number) + ".txt", ios::in);
+			data_base_file_pointer.open("C:\\Users\\Public\\Documents\\TDsoftwares\\Advanced_Bank_Management_System\\Employers_Record\\" + to_string(employee_number) + ".txt", ios::in);
 			data_base_file_pointer.read((char *)&employee, sizeof(employee));
 			data_base_file_pointer.close();
 			cin >> given_password;
 			if (employee.check_password(given_password))
 			{
 				file_pointer.close();
-				if (remove(("Employers_Record\\" + to_string(employee_number) + ".txt").c_str()) == 0)
+				if (remove(("C:\\Users\\Public\\Documents\\TDsoftwares\\Advanced_Bank_Management_System\\Employers_Record\\" + to_string(employee_number) + ".txt").c_str()) == 0)
 				{
 					gxy(6, 12), printf("Account Removed Successfully");
 				}
@@ -1620,7 +1667,7 @@ void delete_an_employee()
 	}
 	else
 	{
-		file_pointer.open("EMPLOYERS_INDEX.TXT", ios::out);
+		file_pointer.open("C:\\Users\\Public\\Documents\\TDsoftwares\\Advanced_Bank_Management_System\\EMPLOYERS_INDEX.TXT", ios::out);
 		for (i = 0; i < to_be_saved_employee_numbers.size(); i++)
 		{
 			file_pointer << to_be_saved_employee_numbers[i] << '\n';
@@ -1646,7 +1693,7 @@ void create_employee()
 	short int birth_date, birth_month, birth_year;
 	bool is_manager = false;
 	fstream index_file_pointer, database_file_pointer;
-	index_file_pointer.open("EMPLOYERS_INDEX.TXT", ios::in);
+	index_file_pointer.open("C:\\Users\\Public\\Documents\\TDsoftwares\\Advanced_Bank_Management_System\\EMPLOYERS_INDEX.TXT", ios::in);
 	have_record = bool(index_file_pointer);
 	if (have_record)
 	{
@@ -1767,8 +1814,8 @@ void create_employee()
 		new_employer.set_new_employee_number();
 	}
 	new_employer.set_account_create_date();
-	database_file_pointer.open("Employers_Record\\" + to_string(new_employer.get_employers_number()) + ".txt", ios::out);
-	database_file_pointer.write((char *)&new_employer, sizeof(new_employer));
+	database_file_pointer.open("C:\\Users\\Public\\Documents\\TDsoftwares\\Advanced_Bank_Management_System\\Employers_Record\\" + to_string(new_employer.get_employers_number()) + ".txt", ios::out);
+	database_file_pointer.write(reinterpret_cast<char *>(&new_employer), sizeof(new_employer));
 	database_file_pointer.close();
 	index_file_pointer.close();
 	index_file_pointer.open("EMPLOYERS_INDEX.TXT", ios::app);
@@ -1790,6 +1837,7 @@ void main_menu_for_managers(bank_employee current_employee)
 	char main_menu_choice;
 main_menu_start:
 	system("cls");
+	system("Color F0");
 	drawboard();
 	gxy(width / 2 - 30, 1), printf(">>>>>>>>>>>>>>>>>>>>>>	 Main Menu	<<<<<<<<<<<<<<<<<<<<<<<<<");
 	gxy(width / 2 - 30, 3), printf("###################	    New Clients	    ###################");
@@ -1908,7 +1956,9 @@ void log_in_screen()
 	bool check_employee = false;
 	fstream file_pointer;
 	string log_in_password;
-	file_pointer.open("EMPLOYERS_INDEX.TXT", ios::in);
+	file_pointer.open("C:\\Users\\Public\\Documents\\TDsoftwares\\Advanced_Bank_Management_System\\EMPLOYERS_INDEX.TXT", ios::in);
+	system("cls");
+	system("Color 0A");
 	drawboard();
 	if (file_pointer)
 	{
@@ -1930,7 +1980,7 @@ void log_in_screen()
 		have_record = false;
 		create_employee();
 		file_pointer.close();
-		file_pointer.open("EMPLOYERS_INDEX.TXT", ios::in);
+		file_pointer.open("C:\\Users\\Public\\Documents\\TDsoftwares\\Advanced_Bank_Management_System\\EMPLOYERS_INDEX.TXT", ios::in);
 		while (!file_pointer.eof())
 		{
 			file_pointer >> i;
@@ -1955,15 +2005,15 @@ log_in_again:
 	else
 	{
 		log_in_id = stoi(log_in_password);
-		gxy(10, 14), printf("										");
+		gxy(10, 14), printf("                                                                                                     ");
 	}
 	for (i = 0; i < employers_numbers.size(); i++)
 	{
 		if (log_in_id == employers_numbers[i])
 		{
 			fstream database_file_pointer;
-			database_file_pointer.open("Employers_Record\\" + to_string(log_in_id) + ".txt", ios::in);
-			database_file_pointer.read((char *)&employer, sizeof(employer));
+			database_file_pointer.open("C:\\Users\\Public\\Documents\\TDsoftwares\\Advanced_Bank_Management_System\\Employers_Record\\" + to_string(log_in_id) + ".txt", ios::in);
+			database_file_pointer.read(reinterpret_cast<char *>(&employer), sizeof(employer));
 			database_file_pointer.close();
 			check_employee = true;
 			break;
@@ -2018,6 +2068,7 @@ log_in_again:
 void log_out(bank_employee current_employee)
 {
 	system("cls");
+	system("Color E0");
 	drawboard();
 	char ch;
 	gxy(10, 5);
@@ -2039,6 +2090,36 @@ int main()
 {
 	SetConsoleTitle("                                                                                                         		      Bank Management System");
 	/* >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>							Should run from here                                             <<<<<<<<<<<<<<<<<<<<<<<<<<<*/
+	const char *dir = "C:\\Users\\Public\\Documents\\TDsoftwares\\Advanced_Bank_Management_System";
+	const char *dirname = "C:\\Users\\Public\\Documents\\TDsoftwares\\Advanced_Bank_Management_System\\Clients_Record";
+	const char *dirname_2 = "C:\\Users\\Public\\Documents\\TDsoftwares\\Advanced_Bank_Management_System\\Employers_Record";
+	if (mkdir(dir) == -1)
+	{
+		if (errno != 17)
+		{
+			gxy(10, 6), printf("Mail teertha.deb579@gmail.com with the errorcode: ");
+			cout << errno;
+			getch();
+		}
+	}
+	if (mkdir(dirname) == -1)
+	{
+		if (errno != 17)
+		{
+			gxy(10, 6), printf("Mail teertha.deb579@gmail.com with the errorcode: ");
+			cout << errno;
+			getch();
+		}
+	}
+	if (mkdir(dirname_2) == -1)
+	{
+		if (errno != 17)
+		{
+			gxy(10, 6), printf("Mail teertha.deb579@gmail.com with the errorcode: ");
+			cout << errno;
+			getch();
+		}
+	}
 	log_in_screen();
 	return 0;
 }
