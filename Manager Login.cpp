@@ -260,7 +260,7 @@ public:
 	// getters:
 	void print_everything()
 	{
-		cout << "name: " << name << " ;acount_number: " << account_number << " ;total: " << saving_amount + checking_amount + visa_amount << " ;interest_rate: " << interest_rate << " ;Loans: " << loans << " ;last modified by: " << last_modifier << '\n';
+		cout << "Name: " << setw(20) << name << " ;ACC number: " << account_number << " ;interest_rate: " << setw(3) << interest_rate << " ;last modified by: " << last_modifier << "; is manager :" << is_employee << '\n';
 	}
 	long long int get_total_customers()
 	{
@@ -462,7 +462,7 @@ public:
 	// getters:
 	void print_every_thing()
 	{
-		cout << "name: " << name << " , address: " << address << " , phone: " << phone_number << " , employee_number : " << employee_number << " , is manager : " << is_manager;
+		cout << "name: " << name << " , phone: " << phone_number << " , employee_number : " << employee_number << " , is manager : " << is_manager;
 	}
 	long long int get_employers_number()
 	{
@@ -579,24 +579,36 @@ bool check_in_others_numbers(long long int new_number, vector<long long int> exi
 	return false;
 }
 
+bool check_full_numerical_expressions(string given_string)
+{
+	for (long long int i = 0; i < given_string[i]; i++)
+	{
+		if ((given_string[i] > '9' or given_string[i] < '0') and (given_string[i] != '-' or given_string[i] != '+'))
+		{
+			return false;
+		}
+	}
+	return true;
+}
 //////////////////////////////////////////////////////////////////////////////////////////////////////// 	ALL working function starts here
 
 void create_new_customer(bank_employee current_employee)
 {
+	fflush(stdin);
 	char choice, sex;
 	bool check_employee = false;
 	vector<customers> clients;
 	vector<long long int> other_customers_bank_number;
 	customers temp_customer, new_customer;
-	string name, address, city, province, country, password, phone_number;
+	string name, address, city, province, country, password, phone_number, temp;
 	double checking_amount, saving_amount, interest_rate = default_interest_rate;
-	long long int customer_employee_number, number;
+	long long int customer_employee_number, number, i;
 	short int birth_date, birth_month, birth_year;
 	fstream file_pointer, database_file_pointer;
 	system("cls");
 	system("Color F9");
 	drawboard();
-	file_pointer.open("C:\\Users\\Public\\Documents\\TDsoftwares\\Advanced_Bank_Management_System\\CLIENTS_NUMBERS.TXT", ios::binary | ios::in);
+	file_pointer.open("C:\\Users\\Public\\Documents\\TDsoftwares\\Advanced_Bank_Management_System\\CLIENTS_NUMBERS.TXT", ios::in | ios::binary);
 	while (!file_pointer.eof())
 	{
 		file_pointer >> number;
@@ -607,71 +619,131 @@ void create_new_customer(bank_employee current_employee)
 		other_customers_bank_number.push_back(number);
 	}
 	file_pointer.close();
-
+	fflush(stdin);
 	gxy(2, 2), printf("Enter Customer name: "), getline(cin, name);
 	while (name.size() == 0)
 	{
-		gxy(2, 3), printf("Enter Customer name(name cannot be empty):    \b\b\b"), getline(cin, name);
+		gxy(2, 2), printf("Enter Customer name(name cannot be empty): ");
+		for (i = 0; i < name[i]; i++)
+			printf(" ");
+		for (i = 0; i < name[i]; i++)
+			printf("\b");
+		getline(cin, name);
 	}
-	gxy(2, 4), printf("Enter Customer address: "), getline(cin, address);
-	gxy(2, 5), printf("Enter customer city: "), getline(cin, city);
-	gxy(2, 6), printf("Enter customer province: "), getline(cin, province);
-	gxy(2, 7), printf("Enter customer country: "), getline(cin, country);
-	gxy(2, 8), printf("Enter Customer checking amount : "), cin >> checking_amount;
-	while (checking_amount < 0)
+	gxy(2, 3), printf("Enter Customer address: "), getline(cin, address);
+	gxy(2, 4), printf("Enter customer city: "), getline(cin, city);
+	gxy(2, 5), printf("Enter customer province: "), getline(cin, province);
+	gxy(2, 6), printf("Enter customer country: "), getline(cin, country);
+	gxy(2, 7), printf("Enter Customer checking amount : "), cin >> temp;
+	while (temp[0] == '-' or !check_full_numerical_expressions(temp))
 	{
-		gxy(2, 9), printf("Enter Customer checking amount(can not be less than 0):                    \b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b"), cin >> checking_amount;
+		gxy(2, 7), printf("Enter Customer checking amount(can not be less than 0): ");
+		for (i = 0; i < temp[i]; i++)
+			printf(" ");
+		for (i = 0; i < temp[i]; i++)
+			printf("\b");
+		cin >> temp;
 	}
-	gxy(2, 10), printf("Enter Customer saving amount: "), cin >> saving_amount;
-	while (saving_amount < 0)
+	checking_amount = stoi(temp);
+	gxy(2, 8), printf("Enter Customer saving amount: "), cin >> temp;
+	while (temp[0] == '-' or !check_full_numerical_expressions(temp))
 	{
-		gxy(2, 11), printf("Enter Customer saving amount(can not be less than 0):                    \b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b"), cin >> saving_amount;
+		gxy(2, 8), printf("Enter Customer saving amount(can not be less than 0):");
+		for (i = 0; i < temp[i]; i++)
+			printf(" ");
+		for (i = 0; i < temp[i]; i++)
+			printf("\b");
+		cin >> temp;
 	}
-	gxy(2, 12), printf("Modify_interest_rate(Y/N): ");
-	cin.ignore();
+	saving_amount = stoi(temp);
+	gxy(2, 9), printf("Modify_interest_rate(Y/N): ");
+
 	scanf("%c", &choice);
 	if (choice == 'Y' or choice == 'y')
 	{
-		gxy(5, 13), printf("Enter Customer interest_rate: "), cin >> interest_rate;
+		gxy(5, 10), printf("Enter Customer interest_rate: "), cin >> interest_rate;
 	}
-	gxy(2, 14), printf("Enter Customer birth date: "), cin >> birth_date;
-	while (birth_date > 31 or birth_date < 1)
+	gxy(2, 11), printf("Enter Customer birth date: "), cin >> temp;
+	if (check_full_numerical_expressions(temp))
 	{
-		gxy(2, 15), printf("Enter Customer Birthdate(can not be less than 0):                    \b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b"), cin >> birth_date;
+		birth_date = stoi(temp);
 	}
-	gxy(2, 16), printf("Enter user birth month: "), cin >> birth_month;
-	while (birth_month > 12 or birth_date < 1)
+	while (!check_full_numerical_expressions(temp) or birth_date > 31 or birth_date < 1)
 	{
-		gxy(2, 17), printf("Enter Customer BirthMonth(can not be less than 0):                    \b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b"), cin >> birth_month;
+		gxy(2, 11), printf("Enter Customer Birth Date(can not be less than 0 or greater than 31): ");
+		for (i = 0; i < temp[i]; i++)
+			printf(" ");
+		for (i = 0; i < temp[i]; i++)
+			printf("\b");
+		cin >> temp;
+		if (check_full_numerical_expressions(temp))
+		{
+			birth_date = stoi(temp);
+		}
 	}
-	gxy(2, 18), printf("Enter user birth year: "), cin >> birth_year;
-	while (birth_year > 2022 or birth_year < 1910)
+	gxy(2, 12), printf("Enter user birth month: "), cin >> temp;
+	if (check_full_numerical_expressions(temp))
 	{
-		gxy(2, 19), printf("Enter Customer BirthYear(can not be imaginary):                    \b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b"), cin >> birth_year;
+		birth_month = stoi(temp);
 	}
-	gxy(2, 20), printf("Enter sex(M / F / T / O): ");
-	cin.ignore();
+	while (!check_full_numerical_expressions(temp) or birth_month > 12 or birth_date < 1)
+	{
+		gxy(2, 12), printf("Enter Customer Birth Month(can not be less than 0 or greater than 12): ");
+		for (i = 0; i < temp[i]; i++)
+			printf(" ");
+		for (i = 0; i < temp[i]; i++)
+			printf("\b");
+		cin >> temp;
+		if (check_full_numerical_expressions(temp))
+		{
+			birth_month = stoi(temp);
+		}
+	}
+	gxy(2, 13), printf("Enter user birth year: "), cin >> temp;
+	if (check_full_numerical_expressions(temp))
+	{
+		birth_year = stoi(temp);
+	}
+	while (!check_full_numerical_expressions(temp) or birth_year > 2022 or birth_year < 1910)
+	{
+		gxy(2, 13), printf("Enter Customer BirthYear(can not be imaginary): ");
+		for (i = 0; i < temp[i]; i++)
+			printf(" ");
+		for (i = 0; i < temp[i]; i++)
+			printf("\b");
+		cin >> temp;
+		if (check_full_numerical_expressions(temp))
+		{
+			birth_year = stoi(temp);
+		}
+	}
+	gxy(2, 14), printf("Enter sex(M / F / T / O): ");
 	scanf("%c", &sex);
 	while (sex != 'M' and sex != 'm' and sex != 'F' and sex != 'f' and sex != 'T' and sex != 't' and sex != 'O' and sex != 'o')
 	{
-		gxy(2, 20), printf("\a	Enter sex(M / F / T / O): ");
+		gxy(2, 14), printf("\a	Enter sex(M / F / T / O): ");
 		scanf("%c", &sex);
 	}
-	gxy(2, 21), printf("Is customer employee of the bank(0/1): ");
+	gxy(2, 15), printf("Is customer employee of the bank(0/1): ");
 	cin >> check_employee;
 	if (check_employee)
 	{
-		gxy(2, 22), printf("Employee Number: ");
+		gxy(2, 16), printf("Employee Number: ");
 		cin >> customer_employee_number;
 	}
-	cin.ignore();
-	gxy(2, 23), printf("Enter Phone number: ");
+	fflush(stdin);
+	gxy(2, 17), printf("Enter Phone number: ");
 	getline(cin, phone_number);
-	gxy(2, 24), printf("Enter password: ");
+	gxy(2, 18), printf("Enter password: ");
 	getline(cin, password);
 	while (check_password(password))
 	{
-		gxy(2, 25), printf("Enter password: ");
+		gxy(2, 18), printf("Enter password: ");
+		for (i = 0; i < password[i]; i++)
+			printf(" ");
+		for (i = 0; i < password[i]; i++)
+			printf("\b");
+		fflush(stdin);
 		getline(cin, password);
 	}
 	new_customer.set_every_thing_for_user(name, password, address, city, province, country, current_employee.get_employers_number(), birth_date, birth_month, birth_year, sex, phone_number, checking_amount, saving_amount, interest_rate);
@@ -685,25 +757,27 @@ void create_new_customer(bank_employee current_employee)
 	drawboard();
 	gxy(5, 6);
 	new_customer.print_every_details_for_customer();
-	gxy(30, 25), printf(">>>>>>>>>>>>>>>>>>Account Number : 	"), cout << new_customer.get_account_number();
-	file_pointer.open("C:\\Users\\Public\\Documents\\TDsoftwares\\Advanced_Bank_Management_System\\CLIENTS_NUMBERS.TXT", ios::binary | ios::app);
+	gxy(30, 25), printf(">>>>>>>>>>>>>>>>>>#########Account Number : 	"), cout << new_customer.get_account_number();
+	file_pointer.open("C:\\Users\\Public\\Documents\\TDsoftwares\\Advanced_Bank_Management_System\\CLIENTS_NUMBERS.TXT", ios::app | ios::binary);
 	file_pointer << '\n'
 				 << new_customer.get_account_number();
 	file_pointer.close();
-	database_file_pointer.open("C:\\Users\\Public\\Documents\\TDsoftwares\\Advanced_Bank_Management_System\\Clients_Record\\" + to_string(new_customer.get_account_number()) + ".txt", ios::binary | ios::out);
+	database_file_pointer.open("C:\\Users\\Public\\Documents\\TDsoftwares\\Advanced_Bank_Management_System\\Clients_Record\\" + to_string(new_customer.get_account_number()) + ".txt", ios::out | ios::binary);
 	database_file_pointer.write(reinterpret_cast<char *>(&new_customer), sizeof(new_customer));
 	database_file_pointer.close();
-	database_file_pointer.open("C:\\Users\\Public\\Documents\\TDsoftwares\\Advanced_Bank_Management_System\\Employers_Record\\" + to_string(current_employee.get_employers_number()) + ".txt", ios::binary | ios::out);
+	database_file_pointer.open("C:\\Users\\Public\\Documents\\TDsoftwares\\Advanced_Bank_Management_System\\Employers_Record\\" + to_string(current_employee.get_employers_number()) + ".txt", ios::out | ios::binary);
 	database_file_pointer.write(reinterpret_cast<char *>(&current_employee), sizeof(current_employee));
 	database_file_pointer.close();
 	gxy(5, 20), printf("Press any key to go to main menu again...\b");
 	getch();
 	gxy(5, 21), printf("Going to main menu");
+	fflush(stdin);
 	wait(200);
 }
 
 void change_employers_own_account_details(bank_employee current_employee)
 {
+	fflush(stdin);
 	string given_password;
 	system("cls");
 	drawboard();
@@ -713,43 +787,51 @@ void change_employers_own_account_details(bank_employee current_employee)
 	if (current_employee.check_password(given_password))
 	{
 		fstream file_pointer;
-		file_pointer.open("C:\\Users\\Public\\Documents\\TDsoftwares\\Advanced_Bank_Management_System\\Employers_Record\\" + to_string(current_employee.get_employers_number()) + ".txt", ios::binary | ios::out);
+		file_pointer.open("C:\\Users\\Public\\Documents\\TDsoftwares\\Advanced_Bank_Management_System\\Employers_Record\\" + to_string(current_employee.get_employers_number()) + ".txt", ios::out | ios::binary);
 		string name, address, password, phone_number, city, province, country, temp;
 		char sex;
-		long long int weekly_income;
+		long long int weekly_income, i;
 		short int birth_date, birth_month, birth_year;
 		system("cls");
 		drawboard();
-		cin.ignore();
 		gxy(5, 2), printf("Enter your name(default name = %s): ", current_employee.get_name().c_str()), getline(cin, name);
 		while (name.size() == 0)
 		{
-			gxy(5, 3), printf("Enter Full name(Cannot be Empty): ");
+			gxy(5, 2), printf("Enter Full name(Cannot be Empty):               \b\b\b\b\b\b\b\b\b\b\b\b\b\b");
+			for (i = 0; i < name[i]; i++)
+				printf(" ");
+			for (i = 0; i < name[i]; i++)
+				printf("\b");
 			getline(cin, name);
 		}
-		gxy(5, 4), printf("Enter employer phone_number(maximum 50 words)(default = %s) : ", current_employee.get_phone_number().c_str());
+		gxy(5, 3), printf("Enter employer phone_number(maximum 50 words)(default = %s): ", current_employee.get_phone_number().c_str());
 		getline(cin, phone_number);
 		while (phone_number.size() == 0 or isalpha(*phone_number.c_str()))
 		{
-			gxy(5, 5), printf("Enter valid Phone number:");
+			gxy(5, 3);
+			for (i = 0; i < phone_number.size() + sizeof("Enter employer phone_number(maximum 50 words)(default =  ): "); i++)
+				printf(" ");
+			for (i = 0; i < phone_number.size() + sizeof("Enter employer phone_number(maximum 50 words)(default =  ): "); i++)
+				printf("\b");
+			gxy(5, 3), printf("Enter valid Phone number:");
 			getline(cin, phone_number);
 		}
-		gxy(5, 6), printf("enter employer address(50 words maximum)(default = %s): ", current_employee.get_address().c_str());
+		gxy(5, 4), printf("enter employer address(50 words maximum)(default = %s): ", current_employee.get_address().c_str());
 		getline(cin, address);
-		gxy(5, 7), printf("Enter employer city(maximum 20 words)(default = %s): ", current_employee.get_city().c_str());
+		gxy(5, 5), printf("Enter employer city(maximum 20 words)(default = %s): ", current_employee.get_city().c_str());
 		getline(cin, city);
-		gxy(5, 8), printf("Enter employer province(maximum 20 words)(default = %s): ", current_employee.get_province().c_str());
+		gxy(5, 6), printf("Enter employer province(maximum 20 words)(default = %s): ", current_employee.get_province().c_str());
 		getline(cin, province);
-		gxy(5, 9), printf("Enter employer country(maximum 50 words)(default = %s): ", current_employee.get_country().c_str());
+		gxy(5, 7), printf("Enter employer country(maximum 50 words)(default = %s): ", current_employee.get_country().c_str());
 		getline(cin, country);
-		gxy(5, 10), printf("Enter employer sex(M/F/T/O): ");
+		gxy(5, 8), printf("Enter employer sex(M/F/T/O): ");
 		sex = getch();
 		while (sex != 'M' and sex != 'm' and sex != 'F' and sex != 'f' and sex != 'T' and sex != 't' and sex != 'O' and sex != 'o')
 		{
-			gxy(5, 11), printf(">>>>>>>>\aEnter employer sex(M/F/T/O): ");
+			gxy(5, 9), printf(">>>>>>>>\aEnter employer sex(M/F/T/O): ");
 			sex = getch();
 		}
-		gxy(5, 12), printf("Enter employer birth date(int. only)(default = %d): ", current_employee.get_birthday());
+		gxy(5, 10), printf("Enter employer birth date(int. only)(default = %d): ", current_employee.get_birthday());
 		cin >> temp;
 		if (!isalpha(*temp.c_str()))
 		{
@@ -757,25 +839,33 @@ void change_employers_own_account_details(bank_employee current_employee)
 		}
 		while (birth_date > 31 or birth_date < 1 or isalpha(*temp.c_str()))
 		{
-			gxy(5, 13), printf("Enter Employer Birthdate(can not be less than 1 and more than 31):                    \b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b");
+			gxy(5, 10), printf("Enter Employer Birthdate(can not be less than 1 and more than 31):");
+			for (i = 0; i < temp[i]; i++)
+				printf(" ");
+			for (i = 0; i < temp[i]; i++)
+				printf("\b");
 			cin >> temp;
 			if (!isalpha(*temp.c_str()))
 				birth_date = stoi(temp);
 		}
-		gxy(5, 14), printf("Enter employer birth month(int. only)(default = %d): ", current_employee.get_birth_month());
+		gxy(5, 11), printf("Enter employer birth month(int. only)(default = %d): ", current_employee.get_birth_month());
 		cin >> temp;
 		if (!isalpha(*temp.c_str()))
 		{
 			birth_month = stoi(temp);
 		}
-		while (birth_month > 31 or birth_month < 1 or isalpha(*temp.c_str()))
+		while (birth_month > 12 or birth_month < 1 or isalpha(*temp.c_str()))
 		{
-			gxy(5, 15), printf("Enter Employer Birthmonth(can not be less than 1 and more than 12):                    \b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b");
+			gxy(5, 11), printf("Enter Employer Birthmonth(can not be less than 1 and more than 12): ");
+			for (i = 0; i < temp[i]; i++)
+				printf(" ");
+			for (i = 0; i < temp[i]; i++)
+				printf("\b");
 			cin >> temp;
 			if (!isalpha(*temp.c_str()))
 				birth_month = stoi(temp);
 		}
-		gxy(5, 16), printf("Enter employer birth year(int. only)(default = %d): ", current_employee.get_birth_year());
+		gxy(5, 12), printf("Enter employer birth year(int. only)(default = %d): ", current_employee.get_birth_year());
 		cin >> temp;
 		if (!isalpha(*temp.c_str()))
 		{
@@ -783,13 +873,26 @@ void change_employers_own_account_details(bank_employee current_employee)
 		}
 		while (birth_year > 2022 or birth_year < 1910 or isalpha(*temp.c_str()))
 		{
-			gxy(5, 17), printf("Enter Employer Birth year(can not be imaginary):                    \b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b");
+			gxy(5, 12), printf("Enter Employer Birth year(can not be imaginary):");
+			for (i = 0; i < temp[i]; i++)
+				printf(" ");
+			for (i = 0; i < temp[i]; i++)
+				printf("\b");
 			cin >> temp;
 			if (!isalpha(*temp.c_str()))
 				birth_year = stoi(temp);
 		}
-		gxy(5, 17), printf("Enter your salary per week(default = %d) : ", current_employee.get_income_per_week());
-		cin >> weekly_income;
+		gxy(5, 13), printf("Enter your salary per week(default = %d) : ", current_employee.get_income_per_week());
+		cin >> temp;
+		while (!check_full_numerical_expressions(temp))
+		{
+			gxy(5, 13);
+			for (i = 0; temp[i]; i++)
+				printf(" ");
+			for (i = 0; temp[i]; i++)
+				printf("\b");
+			printf("Enter your salary per week(default = %d) : ", current_employee.get_income_per_week());
+		}
 		current_employee.set_everything(name, phone_number, given_password, address, city, province, country, sex, weekly_income, birth_date, birth_month, birth_year, current_employee.check_is_manager());
 		file_pointer.write(reinterpret_cast<char *>(&current_employee), sizeof(current_employee));
 		file_pointer.close();
@@ -807,24 +910,34 @@ void change_employers_own_account_details(bank_employee current_employee)
 
 void Disable_Customers_account(bank_employee current_employee)
 {
+	fflush(stdin);
 	customers client;
+	string temp;
 	char surity = 'n';
 	long long int account_number, tmp;
 	fstream file_pointer, file_pointer_2;
 	bool acc_find = 0;
-	file_pointer.open("C:\\Users\\Public\\Documents\\TDsoftwares\\Advanced_Bank_Management_System\\CLIENTS_NUMBERS.TXT", ios::in);
+	file_pointer.open("C:\\Users\\Public\\Documents\\TDsoftwares\\Advanced_Bank_Management_System\\CLIENTS_NUMBERS.TXT", ios::in | ios::binary);
 	system("cls");
 	system("Color 4F");
 	drawboard();
 	gxy(6, 4), printf("Enter the Account Number that you want to modify: ");
-	cin >> tmp;
+	cin >> temp;
+	if (check_full_numerical_expressions(temp))
+	{
+		tmp = stoi(temp);
+	}
+	else
+	{
+		gxy(6, 4), printf("Enter Valid Account number without any alphabets: ");
+	}
 	while (!file_pointer.eof())
 	{
 		file_pointer >> account_number;
 		if (tmp == account_number)
 		{
 			acc_find = true;
-			file_pointer_2.open("C:\\Users\\Public\\Documents\\TDsoftwares\\Advanced_Bank_Management_System\\Clients_Record\\" + to_string(account_number) + ".txt", ios::in);
+			file_pointer_2.open("C:\\Users\\Public\\Documents\\TDsoftwares\\Advanced_Bank_Management_System\\Clients_Record\\" + to_string(account_number) + ".txt", ios::in | ios::binary);
 			file_pointer_2.read(reinterpret_cast<char *>(&client), sizeof(client));
 			if (client.get_active_status())
 			{
@@ -835,7 +948,7 @@ void Disable_Customers_account(bank_employee current_employee)
 				gxy(15, 7), cout << "Are you sure to enable " << client.get_name() << "'s account?(y/n): ";
 			}
 			surity = getch();
-			cin.ignore();
+
 			if (surity == 'y' or surity == 'Y')
 			{
 				file_pointer_2.close();
@@ -849,13 +962,9 @@ void Disable_Customers_account(bank_employee current_employee)
 				}
 				client.last_modified_by(current_employee.get_employers_number());
 				client.set_account_modification_date();
-				file_pointer_2.open("C:\\Users\\Public\\Documents\\TDsoftwares\\Advanced_Bank_Management_System\\Clients_Record\\" + to_string(account_number) + ".txt", ios::out);
+				file_pointer_2.open("C:\\Users\\Public\\Documents\\TDsoftwares\\Advanced_Bank_Management_System\\Clients_Record\\" + to_string(account_number) + ".txt", ios::out | ios::binary);
 				file_pointer_2.write(reinterpret_cast<char *>(&client), sizeof(client));
 				file_pointer_2.close();
-			}
-			else
-			{
-				gxy(2, 6), printf("Not removing the acocunt.");
 			}
 		}
 	}
@@ -892,23 +1001,33 @@ void Disable_Customers_account(bank_employee current_employee)
 
 void deposit_into_customers_account(bank_employee current_employee)
 {
+	fflush(stdin);
 	fstream file_pointer, file_pointer_2;
 	customers client;
-	long long int account_number, record_account_number;
+	string temp;
+	long long int account_number, record_account_number, i;
 	long double amount_to_deposit;
-	file_pointer.open("C:\\Users\\Public\\Documents\\TDsoftwares\\Advanced_Bank_Management_System\\CLIENTS_NUMBERS.TXT", ios::in);
+	file_pointer.open("C:\\Users\\Public\\Documents\\TDsoftwares\\Advanced_Bank_Management_System\\CLIENTS_NUMBERS.TXT", ios::in | ios::binary);
 	bool found_account;
 	system("cls");
 	drawboard();
 	gxy(4, 4), printf("Enter the clients account number : ");
-	cin >> account_number;
+	cin >> temp;
+	if (check_full_numerical_expressions(temp))
+	{
+		account_number = stoi(temp);
+	}
+	else
+	{
+		gxy(4, 4), printf("Enter Valid Account number without any alphabets: ");
+	}
 	while (!file_pointer.eof())
 	{
 		file_pointer >> record_account_number;
 		if (record_account_number == account_number)
 		{
 			found_account = true;
-			file_pointer_2.open("C:\\Users\\Public\\Documents\\TDsoftwares\\Advanced_Bank_Management_System\\Clients_Record\\" + to_string(account_number) + ".txt", ios::in);
+			file_pointer_2.open("C:\\Users\\Public\\Documents\\TDsoftwares\\Advanced_Bank_Management_System\\Clients_Record\\" + to_string(account_number) + ".txt", ios::in | ios::binary);
 			file_pointer_2.read(reinterpret_cast<char *>(&client), sizeof(client));
 			gxy(4, 6), printf("[1] deposit into checking");
 			gxy(4, 8), printf("[2] deposit into saving");
@@ -928,13 +1047,26 @@ void deposit_into_customers_account(bank_employee current_employee)
 			}
 			else
 			{
-				gxy(8, 12), printf("                                        \b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\bWrong Keyword. Going to selection again.");
+				gxy(4, 12), printf("                                        \b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\bWrong Keyword. Going to selection again.");
 				wait(300);
 				gxy(1, 12), printf("                                                                                \b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b");
 				gxy(4, 10), printf("Enter selection(1/2):    \b\b\b");
 				goto select_again;
 			}
-			cin >> amount_to_deposit;
+			cin >> temp;
+			if (check_full_numerical_expressions(temp))
+			{
+				amount_to_deposit = stoi(temp);
+			}
+			else
+			{
+				gxy(4, 12);
+				for (i = 0; i < (temp.size() + sizeof("Enter amount to deposit into ") + 6 + (ch == 1) * 2); i++)
+					printf(" ");
+				for (i = 0; i < (temp.size() + sizeof("Enter amount to deposit into ") + 6 + (ch == 1) * 2); i++)
+					printf("\b");
+				goto again_deposit;
+			}
 			if (amount_to_deposit < 0)
 			{
 				gxy(6, 13), printf("Are you sure you want to deduct money from the account?(y/n) : ");
@@ -964,7 +1096,7 @@ void deposit_into_customers_account(bank_employee current_employee)
 			}
 			client.last_modified_by(current_employee.get_employers_number());
 			file_pointer_2.close();
-			file_pointer_2.open("C:\\Users\\Public\\Documents\\TDsoftwares\\Advanced_Bank_Management_System\\Clients_Record\\" + to_string(account_number) + ".txt", ios::out);
+			file_pointer_2.open("C:\\Users\\Public\\Documents\\TDsoftwares\\Advanced_Bank_Management_System\\Clients_Record\\" + to_string(account_number) + ".txt", ios::out | ios::binary);
 			file_pointer_2.write(reinterpret_cast<char *>(&client), sizeof(client));
 			file_pointer_2.close();
 			break;
@@ -981,16 +1113,26 @@ void deposit_into_customers_account(bank_employee current_employee)
 
 void Modify_customers_account(bank_employee current_emplyoee)
 {
+	fflush(stdin);
 	fstream file_pointer, file_pointer_2;
-	file_pointer.open("C:\\Users\\Public\\Documents\\TDsoftwares\\Advanced_Bank_Management_System\\CLIENTS_NUMBERS.TXT", ios::in);
+	file_pointer.open("C:\\Users\\Public\\Documents\\TDsoftwares\\Advanced_Bank_Management_System\\CLIENTS_NUMBERS.TXT", ios::in | ios::binary);
 	char surity = 'n';
-	long long int account_number = 0, tmp;
+	long long int account_number = 0, tmp, i;
 	bool acc_find = false;
+	string temp;
 	system("cls");
 	system("Color E0");
 	drawboard();
 	gxy(6, 4), printf("Enter the Account Number that you want to modify: ");
-	cin >> tmp;
+	cin >> temp;
+	if (check_full_numerical_expressions(temp))
+	{
+		tmp = stoi(temp);
+	}
+	else
+	{
+		gxy(6, 4), printf("Enter Valid Account number without any alphabets: ");
+	}
 	while (!file_pointer.eof())
 	{
 		file_pointer >> account_number;
@@ -998,7 +1140,7 @@ void Modify_customers_account(bank_employee current_emplyoee)
 		{
 			acc_find = true;
 			customers client;
-			file_pointer_2.open("C:\\Users\\Public\\Documents\\TDsoftwares\\Advanced_Bank_Management_System\\Clients_Record\\" + to_string(account_number) + ".txt", ios::in);
+			file_pointer_2.open("C:\\Users\\Public\\Documents\\TDsoftwares\\Advanced_Bank_Management_System\\Clients_Record\\" + to_string(account_number) + ".txt", ios::in | ios::binary);
 			file_pointer_2.read(reinterpret_cast<char *>(&client), sizeof(client));
 			gxy(15, 7), cout << "Are you sure to modify " << client.get_name() << "'s account?(y/n): ";
 			surity = getch();
@@ -1012,60 +1154,98 @@ void Modify_customers_account(bank_employee current_emplyoee)
 				long long int customer_employee_number;
 				system("cls");
 				drawboard();
-				cin.ignore();
 				gxy(2, 2), printf("Enter Client name(default name = %s): ", client.get_name().c_str()), getline(cin, name);
 				while (name.size() == 0)
 				{
-					gxy(2, 3), printf("Enter Customer name(name cannot be empty):    \b\b\b"), getline(cin, name);
+					gxy(2, 2), printf("Enter Customer name(name cannot be empty):         \b\b\b\b\b\b\b\b"), getline(cin, name);
 				}
-				gxy(2, 4), printf("Enter Customer address(default : %s): ", client.get_address().c_str()), getline(cin, address);
-				gxy(2, 5), printf("Enter customer city(default : %s): ", client.get_city().c_str()), getline(cin, city);
-				gxy(2, 6), printf("Enter customer province(default : %s): ", client.get_province().c_str()), getline(cin, province);
-				gxy(2, 7), printf("Enter customer country(default : %s): ", client.get_country().c_str()), getline(cin, country);
-				gxy(2, 8), printf("Modify_interest_rate(Y/N): ");
+				gxy(2, 3), printf("Enter Customer address(default : %s): ", client.get_address().c_str()), getline(cin, address);
+				gxy(2, 4), printf("Enter customer city(default : %s): ", client.get_city().c_str()), getline(cin, city);
+				gxy(2, 5), printf("Enter customer province(default : %s): ", client.get_province().c_str()), getline(cin, province);
+				gxy(2, 6), printf("Enter customer country(default : %s): ", client.get_country().c_str()), getline(cin, country);
+				gxy(2, 7), printf("Modify_interest_rate(Y/N): ");
 				scanf("%c", &choice);
 				if (choice == 'Y' or choice == 'y')
 				{
-					printf("Enter Customer interest_rate: "), cin >> interest_rate;
+					gxy(2, 8), printf("Enter Customer interest_rate: "), cin >> interest_rate;
 				}
-				gxy(2, 9), printf("Enter Customer birth date: "), cin >> birth_date;
-				while (birth_date > 31 or birth_date < 1)
+				gxy(2, 9), printf("Enter Customer birth date: "), cin >> temp;
+				if (check_full_numerical_expressions(temp))
 				{
-					gxy(2, 10), printf("Enter Customer Birthdate(can not be less than 0):                    \b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b"), cin >> birth_date;
+					birth_date = stoi(temp);
 				}
-				gxy(2, 11), printf("Enter user birth month: "), cin >> birth_month;
-				while (birth_month > 12 or birth_date < 1)
+				while (!check_full_numerical_expressions(temp) or birth_date > 31 or birth_date < 1)
 				{
-					gxy(2, 12), printf("Enter Customer BirthMonth(can not be less than 0):                    \b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b"), cin >> birth_month;
+					gxy(2, 9), printf("Enter Customer Birth Date(can not be less than 0 or greater than 31): ");
+					for (i = 0; i < temp[i]; i++)
+						printf(" ");
+					for (i = 0; i < temp[i]; i++)
+						printf("\b");
+					cin >> temp;
+					if (check_full_numerical_expressions(temp))
+					{
+						birth_date = stoi(temp);
+					}
 				}
-				gxy(2, 13), printf("Enter user birth year: "), cin >> birth_year;
-				while (birth_year > 2022 or birth_year < 1910)
+				gxy(2, 10), printf("Enter user birth month: "), cin >> temp;
+				if (check_full_numerical_expressions(temp))
 				{
-					gxy(2, 14), printf("Enter Customer BirthYear(can not be imaginary):                    \b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b"), cin >> birth_year;
+					birth_month = stoi(temp);
 				}
-				gxy(2, 15), printf("Enter sex(M / F / T / O): ");
-				cin.ignore();
+				while (!check_full_numerical_expressions(temp) or birth_month > 12 or birth_date < 1)
+				{
+					gxy(2, 10), printf("Enter Customer Birth Month(can not be less than 0 or greater than 12): ");
+					for (i = 0; i < temp[i]; i++)
+						printf(" ");
+					for (i = 0; i < temp[i]; i++)
+						printf("\b");
+					cin >> temp;
+					if (check_full_numerical_expressions(temp))
+					{
+						birth_month = stoi(temp);
+					}
+				}
+				gxy(2, 11), printf("Enter user birth year: "), cin >> temp;
+				if (check_full_numerical_expressions(temp))
+				{
+					birth_year = stoi(temp);
+				}
+				while (!check_full_numerical_expressions(temp) or birth_year > 2022 or birth_year < 1910)
+				{
+					gxy(2, 11), printf("Enter Customer BirthYear(can not be imaginary): ");
+					for (i = 0; i < temp[i]; i++)
+						printf(" ");
+					for (i = 0; i < temp[i]; i++)
+						printf("\b");
+					cin >> temp;
+					if (check_full_numerical_expressions(temp))
+					{
+						birth_year = stoi(temp);
+					}
+				}
+				gxy(2, 12), printf("Enter sex(M / F / T / O): ");
+
 				scanf("%c", &sex);
 				while (sex != 'M' and sex != 'm' and sex != 'F' and sex != 'f' and sex != 'T' and sex != 't' and sex != 'O' and sex != 'o')
 				{
-					gxy(2, 16), printf("\a	Enter sex(M / F / T / O): ");
+					gxy(2, 13), printf("\a	Enter sex(M / F / T / O): ");
 					scanf("%c", &sex);
 				}
-				cin.ignore();
-				gxy(2, 17), printf("Enter Customers Phone Number: ");
+
+				gxy(2, 14), printf("Enter Customers Phone Number: ");
 				getline(cin, phone_number);
-				gxy(2, 18), printf("Is customer employee of the bank(0/1): ");
+				gxy(2, 15), printf("Is customer employee of the bank(0/1): ");
 				cin >> check_employee;
 				if (check_employee)
 				{
-					gxy(2, 19), printf("Employee Number: ");
+					gxy(2, 16), printf("Employee Number: ");
 					cin >> customer_employee_number;
 				}
 				client.modify_account(current_emplyoee.get_employers_number(), name, address, city, province, country, interest_rate, birth_date, birth_month, birth_year, sex, phone_number, check_employee, customer_employee_number);
 				client.last_modified_by(current_emplyoee.get_employers_number());
 				client.set_account_modification_date();
 				file_pointer_2.close();
-				file_pointer_2.open("C:\\Users\\Public\\Documents\\TDsoftwares\\Advanced_Bank_Management_System\\Clients_Record\\" + to_string(account_number) + ".txt", ios::out);
+				file_pointer_2.open("C:\\Users\\Public\\Documents\\TDsoftwares\\Advanced_Bank_Management_System\\Clients_Record\\" + to_string(account_number) + ".txt", ios::out | ios::binary);
 				file_pointer_2.write(reinterpret_cast<char *>(&client), sizeof(client));
 			}
 		}
@@ -1108,7 +1288,7 @@ void show_full_account_details()
 	gxy(6, 4), printf("Enter the account number to show full info of the account: ");
 	cin >> temp_number;
 	fstream file_pointer;
-	file_pointer.open("C:\\Users\\Public\\Documents\\TDsoftwares\\Advanced_Bank_Management_System\\CLIENTS_NUMBERS.TXT", ios::in);
+	file_pointer.open("C:\\Users\\Public\\Documents\\TDsoftwares\\Advanced_Bank_Management_System\\CLIENTS_NUMBERS.TXT", ios::in | ios::binary);
 	gxy(6, 7), printf("Searching");
 	while (!file_pointer.eof())
 	{
@@ -1120,7 +1300,7 @@ void show_full_account_details()
 			drawboard();
 			customers client;
 			file_pointer.close();
-			file_pointer.open("C:\\Users\\Public\\Documents\\TDsoftwares\\Advanced_Bank_Management_System\\Clients_Record\\" + to_string(account_number) + ".txt", ios::in);
+			file_pointer.open("C:\\Users\\Public\\Documents\\TDsoftwares\\Advanced_Bank_Management_System\\Clients_Record\\" + to_string(account_number) + ".txt", ios::in | ios::binary);
 			file_pointer.read(reinterpret_cast<char *>(&client), sizeof(client));
 			client.print_every_details_for_customer();
 			break;
@@ -1149,7 +1329,7 @@ void read_all_clients()
 	vector<long long int> clients_numbers;
 	customers temp_customer;
 	fstream file_pointer, data_base_file_pointer;
-	file_pointer.open("C:\\Users\\Public\\Documents\\TDsoftwares\\Advanced_Bank_Management_System\\CLIENTS_NUMBERS.TXT", ios::in);
+	file_pointer.open("C:\\Users\\Public\\Documents\\TDsoftwares\\Advanced_Bank_Management_System\\CLIENTS_NUMBERS.TXT", ios::in | ios::binary);
 	while (!file_pointer.eof())
 	{
 		file_pointer >> temp_number;
@@ -1172,7 +1352,7 @@ void read_all_clients()
 	{
 		for (i = j = 0; i < clients_numbers.size(); i++, j++)
 		{
-			data_base_file_pointer.open("C:\\Users\\Public\\Documents\\TDsoftwares\\Advanced_Bank_Management_System\\Clients_Record\\" + to_string(clients_numbers[i]) + ".txt", ios::in);
+			data_base_file_pointer.open("C:\\Users\\Public\\Documents\\TDsoftwares\\Advanced_Bank_Management_System\\Clients_Record\\" + to_string(clients_numbers[i]) + ".txt", ios::in | ios::binary);
 			if (data_base_file_pointer)
 			{
 				data_base_file_pointer.read((char *)&temp_customer, sizeof(temp_customer));
@@ -1217,6 +1397,7 @@ void created_accounts_by_the_user(bank_employee current_employee)
 	file_pointer.open("C:\\Users\\Public\\Documents\\TDsoftwares\\Advanced_Bank_Management_System\\CLIENTS_NUMBERS.TXT", ios::in);
 	system("cls");
 	drawboard();
+	system("Color 0B");
 	while (!file_pointer.eof())
 	{
 		file_pointer >> temp_client_number;
@@ -1232,7 +1413,7 @@ void created_accounts_by_the_user(bank_employee current_employee)
 
 	for (i = 0; clients_numbers.size() > i; i++)
 	{
-		data_base_file_pointer.open("C:\\Users\\Public\\Documents\\TDsoftwares\\Advanced_Bank_Management_System\\Clients_Record\\" + to_string(clients_numbers[i]) + ".txt", ios::in);
+		data_base_file_pointer.open("C:\\Users\\Public\\Documents\\TDsoftwares\\Advanced_Bank_Management_System\\Clients_Record\\" + to_string(clients_numbers[i]) + ".txt", ios::in | ios::binary);
 		data_base_file_pointer.read((char *)&client, sizeof(client));
 		if (current_employee.get_employers_number() == client.get_account_creators_id())
 		{
@@ -1253,28 +1434,40 @@ void created_accounts_by_the_user(bank_employee current_employee)
 
 void change_employee_password(bank_employee current_employee)
 {
-	string given_password;
+	fflush(stdin);
+	string given_password, temp;
 	bank_employee temp_employer;
 	long long int target_employee_index = 0, i;
 	fstream file_pointer;
-	file_pointer.open("C:\\Users\\Public\\Documents\\TDsoftwares\\Advanced_Bank_Management_System\\Employers_Record\\" + to_string(current_employee.get_employers_number()) + ".txt", ios::in | ios::out);
+	file_pointer.open("C:\\Users\\Public\\Documents\\TDsoftwares\\Advanced_Bank_Management_System\\Employers_Record\\" + to_string(current_employee.get_employers_number()) + ".txt", ios::in | ios::out | ios::binary);
 	system("cls");
 	drawboard();
 	gxy(5, 7), printf("Enter current password: ");
 	getline(cin, given_password);
 	if (current_employee.check_password(given_password))
 	{
-		gxy(5, 9), printf("Enter new password: ");
+		gxy(9, 9), printf("Enter new password: ");
+		fflush(stdin);
 		getline(cin, given_password);
 		while (check_password(given_password))
 		{
-			gxy(5, 11), printf("Enter new password(Include numbers and letters): ");
+			gxy(9, 9), printf("Enter new password(Include numbers and letters): ");
 			getline(cin, given_password);
 		}
-		current_employee.change_password(given_password);
-		file_pointer.write(reinterpret_cast<char *>(&current_employee), sizeof(current_employee));
-		file_pointer.close();
-		gxy(5, 15), printf("Changed Password Succesfully");
+		fflush(stdin);
+		gxy(9, 11), printf("Confirm Password: ");
+		getline(cin, temp);
+		if (temp == given_password)
+		{
+			current_employee.change_password(given_password);
+			file_pointer.write(reinterpret_cast<char *>(&current_employee), sizeof(current_employee));
+			file_pointer.close();
+			gxy(5, 15), printf("Changed Password Succesfully");
+		}
+		else
+		{
+			gxy(5, 15), printf("Password Not matched. Can not change password");
+		}
 	}
 	else
 	{
@@ -1391,7 +1584,7 @@ void read_all_employees()
 	long long int number, i, j;
 	vector<long long int> employee_numbers;
 	fstream file_pointer, database_file_pointer;
-	file_pointer.open("C:\\Users\\Public\\Documents\\TDsoftwares\\Advanced_Bank_Management_System\\EMPLOYERS_INDEX.TXT", ios::in);
+	file_pointer.open("C:\\Users\\Public\\Documents\\TDsoftwares\\Advanced_Bank_Management_System\\EMPLOYERS_INDEX.TXT", ios::in | ios::binary);
 	while (!file_pointer.eof())
 	{
 		file_pointer >> number;
@@ -1407,13 +1600,13 @@ void read_all_employees()
 	for (i = j = 0; i < employee_numbers.size(); i++, j++)
 	{
 		number = employee_numbers[i];
-		database_file_pointer.open("C:\\Users\\Public\\Documents\\TDsoftwares\\Advanced_Bank_Management_System\\Employers_Record\\" + to_string(number) + ".txt", ios::in);
+		database_file_pointer.open("C:\\Users\\Public\\Documents\\TDsoftwares\\Advanced_Bank_Management_System\\Employers_Record\\" + to_string(number) + ".txt", ios::in | ios::binary);
 		database_file_pointer.read(reinterpret_cast<char *>(&temp_employer), sizeof(temp_employer));
 		gxy(2, j + 1), temp_employer.print_every_thing();
 		database_file_pointer.close();
 		if (j == 18 and i < employee_numbers.size() - 1)
 		{
-			gxy(6, 22), printf("Press any key to show next employers...\b");
+			gxy(6, 22), printf("->->->->->->->->->->->->->-> Press any key to show next employers...\b");
 			getch();
 			j = 0;
 			system("cls");
@@ -1429,14 +1622,25 @@ void read_all_employees()
 void show_full_details_of_an_employee()
 {
 	fstream file_pointer;
-	file_pointer.open("C:\\Users\\Public\\Documents\\TDsoftwares\\Advanced_Bank_Management_System\\EMPLOYERS_INDEX.TXT", ios::in);
+	file_pointer.open("C:\\Users\\Public\\Documents\\TDsoftwares\\Advanced_Bank_Management_System\\EMPLOYERS_INDEX.TXT", ios::in | ios::binary);
 	bank_employee employee;
-	long long int employee_number, index_number;
+	long long int employee_number, index_number, i;
 	bool found_employee = false;
+	string temp;
 	system("cls");
 	drawboard();
 	gxy(6, 4), printf("Enter the account number to show full info of the account: ");
-	cin >> employee_number;
+	cin >> temp;
+	while (!check_full_numerical_expressions(temp))
+	{
+		gxy(6, 4), printf("Enter Valid Account number without any alphabets:                 \b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b");
+		for (i = 0; temp[i]; i++)
+			printf(" ");
+		for (i = 0; temp[i]; i++)
+			printf("\b");
+		cin >> temp;
+	}
+	employee_number = stoi(temp);
 	gxy(6, 7), printf("Searching");
 	while (!file_pointer.eof())
 	{
@@ -1445,7 +1649,7 @@ void show_full_details_of_an_employee()
 		{
 			found_employee = true;
 			fstream database_file_pointer;
-			database_file_pointer.open("C:\\Users\\Public\\Documents\\TDsoftwares\\Advanced_Bank_Management_System\\Employers_Record\\" + to_string(employee_number) + ".txt", ios::in);
+			database_file_pointer.open("C:\\Users\\Public\\Documents\\TDsoftwares\\Advanced_Bank_Management_System\\Employers_Record\\" + to_string(employee_number) + ".txt", ios::in | ios::binary);
 			database_file_pointer.read(reinterpret_cast<char *>(&employee), sizeof(employee));
 			database_file_pointer.close();
 			system("cls");
@@ -1473,16 +1677,28 @@ void show_full_details_of_an_employee()
 
 void modify_an_employees_account()
 {
+	fflush(stdin);
 	fstream file_pointer;
-	file_pointer.open("C:\\Users\\Public\\Documents\\TDsoftwares\\Advanced_Bank_Management_System\\EMPLOYERS_INDEX.TXT", ios::in);
+	file_pointer.open("C:\\Users\\Public\\Documents\\TDsoftwares\\Advanced_Bank_Management_System\\EMPLOYERS_INDEX.TXT", ios::in | ios::binary);
 	bank_employee employee;
-	long long int employee_number, index_number;
+	long long int employee_number, index_number, i;
 	bool found_employee = false;
+	string temp;
 	system("cls");
 	system("Color E0");
 	drawboard();
 	gxy(6, 4), printf("Enter the account number to edit details: ");
-	cin >> employee_number;
+	cin >> temp;
+	while (!check_full_numerical_expressions(temp))
+	{
+		gxy(6, 4), printf("Enter Valid Account number without any alphabets:                 \b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b");
+		for (i = 0; temp[i]; i++)
+			printf(" ");
+		for (i = 0; temp[i]; i++)
+			printf("\b");
+		cin >> temp;
+	}
+	employee_number = stoi(temp);
 	gxy(6, 7), printf("Searching");
 	while (!file_pointer.eof())
 	{
@@ -1494,11 +1710,12 @@ void modify_an_employees_account()
 			gxy(5, 10), printf("Enter employer password: ");
 			cin >> given_password;
 			fstream database_file_pointer;
-			database_file_pointer.open("C:\\Users\\Public\\Documents\\TDsoftwares\\Advanced_Bank_Management_System\\Employers_Record\\" + to_string(employee_number) + ".txt", ios::in);
+			database_file_pointer.open("C:\\Users\\Public\\Documents\\TDsoftwares\\Advanced_Bank_Management_System\\Employers_Record\\" + to_string(employee_number) + ".txt", ios::in | ios::binary);
 			database_file_pointer.read((char *)&employee, sizeof(employee));
 			database_file_pointer.close();
 			if (employee.check_password(given_password))
 			{
+				fflush(stdin);
 				string name, address, password, phone_number, city, province, country, temp;
 				char sex;
 				long long int weekly_income;
@@ -1506,36 +1723,44 @@ void modify_an_employees_account()
 				bool is_manager = 0;
 				system("cls");
 				drawboard();
-				cin.ignore();
 				gxy(5, 2), printf("Enter your name(default name = %s): ", employee.get_name().c_str()), getline(cin, name);
 				while (name.size() == 0)
 				{
-					gxy(5, 3), printf("Enter Full name(Cannot be Empty): ");
+					gxy(5, 2), printf("Enter Full name(Cannot be Empty):               \b\b\b\b\b\b\b\b\b\b\b\b\b\b");
+					for (i = 0; i < name[i]; i++)
+						printf(" ");
+					for (i = 0; i < name[i]; i++)
+						printf("\b");
 					getline(cin, name);
 				}
-				gxy(5, 4), printf("Enter employer phone_number(maximum 50 words)(default = %s) : ", employee.get_phone_number().c_str());
+				gxy(5, 3), printf("Enter employer phone_number(maximum 50 words)(default = %s) : ", employee.get_phone_number().c_str());
 				getline(cin, phone_number);
 				while (phone_number.size() == 0 or isalpha(*phone_number.c_str()))
 				{
-					gxy(5, 5), printf("Enter valid Phone number:");
+					gxy(5, 3);
+					for (i = 0; i < phone_number.size() + sizeof("Enter employer phone_number(maximum 50 words)(default =  ): "); i++)
+						printf(" ");
+					for (i = 0; i < phone_number.size() + sizeof("Enter employer phone_number(maximum 50 words)(default =  ): "); i++)
+						printf("\b");
+					gxy(5, 3), printf("Enter valid Phone number:");
 					getline(cin, phone_number);
 				}
-				gxy(5, 6), printf("enter employer address(50 words maximum)(default = %s): ", employee.get_address().c_str());
+				gxy(5, 4), printf("enter employer address(50 words maximum)(default = %s): ", employee.get_address().c_str());
 				getline(cin, address);
-				gxy(5, 7), printf("Enter employer city(maximum 20 words)(default = %s): ", employee.get_city().c_str());
+				gxy(5, 5), printf("Enter employer city(maximum 20 words)(default = %s): ", employee.get_city().c_str());
 				getline(cin, city);
-				gxy(5, 8), printf("Enter employer province(maximum 20 words)(default = %s): ", employee.get_province().c_str());
+				gxy(5, 6), printf("Enter employer province(maximum 20 words)(default = %s): ", employee.get_province().c_str());
 				getline(cin, province);
-				gxy(5, 9), printf("Enter employer country(maximum 50 words)(default = %s): ", employee.get_country().c_str());
+				gxy(5, 7), printf("Enter employer country(maximum 50 words)(default = %s): ", employee.get_country().c_str());
 				getline(cin, country);
-				gxy(5, 10), printf("Enter employer sex(M/F/T/O): ");
+				gxy(5, 8), printf("Enter employer sex(M/F/T/O): ");
 				sex = getch();
 				while (sex != 'M' and sex != 'm' and sex != 'F' and sex != 'f' and sex != 'T' and sex != 't' and sex != 'O' and sex != 'o')
 				{
-					gxy(5, 11), printf(">>>>>>>>\aEnter employer sex(M/F/T/O): ");
+					gxy(5, 9), printf(">>>>>>>>\aEnter employer sex(M/F/T/O): ");
 					sex = getch();
 				}
-				gxy(5, 12), printf("Enter employer birth date(int. only)(default = %d): ", employee.get_birthday());
+				gxy(5, 10), printf("Enter employer birth date(int. only)(default = %d): ", employee.get_birthday());
 				cin >> temp;
 				if (!isalpha(*temp.c_str()))
 				{
@@ -1543,25 +1768,33 @@ void modify_an_employees_account()
 				}
 				while (birth_date > 31 or birth_date < 1 or isalpha(*temp.c_str()))
 				{
-					gxy(5, 13), printf("Enter Employer Birthdate(can not be less than 1 and more than 31):                    \b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b");
+					gxy(5, 10), printf("Enter Employer Birth date(can not be less than 1 and more than 31): ");
+					for (i = 0; i < temp[i]; i++)
+						printf(" ");
+					for (i = 0; i < temp[i]; i++)
+						printf("\b");
 					cin >> temp;
 					if (!isalpha(*temp.c_str()))
 						birth_date = stoi(temp);
 				}
-				gxy(5, 14), printf("Enter employer birth month(int. only)(default = %d): ", employee.get_birth_month());
+				gxy(5, 11), printf("Enter employer birth month(int. only)(default = %d): ", employee.get_birth_month());
 				cin >> temp;
 				if (!isalpha(*temp.c_str()))
 				{
 					birth_month = stoi(temp);
 				}
-				while (birth_month > 31 or birth_month < 1 or isalpha(*temp.c_str()))
+				while (birth_month > 12 or birth_month < 1 or isalpha(*temp.c_str()))
 				{
-					gxy(5, 15), printf("Enter Employer Birthmonth(can not be less than 1 and more than 12):                    \b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b");
+					gxy(5, 11), printf("Enter Employer Birth month(can not be less than 1 and more than 12): ");
+					for (i = 0; i < temp[i]; i++)
+						printf(" ");
+					for (i = 0; i < temp[i]; i++)
+						printf("\b");
 					cin >> temp;
 					if (!isalpha(*temp.c_str()))
 						birth_month = stoi(temp);
 				}
-				gxy(5, 16), printf("Enter employer birth year(int. only)(default = %d): ", employee.get_birth_year());
+				gxy(5, 12), printf("Enter employer birth year(int. only)(default = %d): ", employee.get_birth_year());
 				cin >> temp;
 				if (!isalpha(*temp.c_str()))
 				{
@@ -1569,16 +1802,29 @@ void modify_an_employees_account()
 				}
 				while (birth_year > 2022 or birth_year < 1910 or isalpha(*temp.c_str()))
 				{
-					gxy(5, 17), printf("Enter Employer Birth year(can not be imaginary):                    \b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b");
+					gxy(5, 12), printf("Enter Employer Birth year(can not be imaginary):");
+					for (i = 0; i < temp[i]; i++)
+						printf(" ");
+					for (i = 0; i < temp[i]; i++)
+						printf("\b");
 					cin >> temp;
 					if (!isalpha(*temp.c_str()))
 						birth_year = stoi(temp);
 				}
-				gxy(5, 17), printf("Enter your salary per week(default = %d) : ", employee.get_income_per_week());
-				cin >> weekly_income;
-				gxy(5, 18), printf("Is manager(0/1): "), cin >> is_manager;
+				gxy(5, 13), printf("Enter your salary per week(default = %d) : ", employee.get_income_per_week());
+				cin >> temp;
+				while (!check_full_numerical_expressions(temp))
+				{
+					gxy(5, 13);
+					for (i = 0; temp[i]; i++)
+						printf(" ");
+					for (i = 0; temp[i]; i++)
+						printf("\b");
+					printf("Enter your salary per week(default = %d) : ", employee.get_income_per_week());
+				}
+				gxy(5, 14), printf("Is manager(0/1): "), cin >> is_manager;
 				employee.set_everything(name, phone_number, given_password, address, city, province, country, sex, weekly_income, birth_date, birth_month, birth_year, is_manager);
-				database_file_pointer.open("Employers_Record\\" + to_string(employee_number) + ".txt", ios::out);
+				database_file_pointer.open("C:\\Users\\Public\\Documents\\TDsoftwares\\Advanced_Bank_Management_System\\Employers_Record\\" + to_string(employee.get_employers_number()) + ".txt", ios::out | ios::binary);
 				database_file_pointer.write((char *)&employee, sizeof(employee));
 				database_file_pointer.close();
 			}
@@ -1610,16 +1856,27 @@ void modify_an_employees_account()
 void delete_an_employee()
 {
 	fstream file_pointer, data_base_file_pointer;
-	file_pointer.open("C:\\Users\\Public\\Documents\\TDsoftwares\\Advanced_Bank_Management_System\\EMPLOYERS_INDEX.TXT", ios::in);
+	file_pointer.open("C:\\Users\\Public\\Documents\\TDsoftwares\\Advanced_Bank_Management_System\\EMPLOYERS_INDEX.TXT", ios::in | ios::binary);
 	bank_employee employee;
 	long long int employee_number, index_number, i;
 	bool found_employee = false;
 	vector<long long int> to_be_saved_employee_numbers;
+	string temp;
 	system("cls");
 	system("Color 4F");
 	drawboard();
 	gxy(6, 4), printf("Enter the account number to delete: ");
-	cin >> employee_number;
+	cin >> temp;
+	while (!check_full_numerical_expressions(temp))
+	{
+		gxy(6, 4), printf("Enter Valid Account number without any alphabets:                 \b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b");
+		for (i = 0; temp[i]; i++)
+			printf(" ");
+		for (i = 0; temp[i]; i++)
+			printf("\b");
+		cin >> temp;
+	}
+	employee_number = stoi(temp);
 	gxy(6, 7), printf("Searching");
 	while (!file_pointer.eof())
 	{
@@ -1629,7 +1886,7 @@ void delete_an_employee()
 			found_employee = true;
 			string given_password;
 			gxy(5, 10), printf("Enter employer password: ");
-			data_base_file_pointer.open("C:\\Users\\Public\\Documents\\TDsoftwares\\Advanced_Bank_Management_System\\Employers_Record\\" + to_string(employee_number) + ".txt", ios::in);
+			data_base_file_pointer.open("C:\\Users\\Public\\Documents\\TDsoftwares\\Advanced_Bank_Management_System\\Employers_Record\\" + to_string(employee_number) + ".txt", ios::in | ios::binary);
 			data_base_file_pointer.read((char *)&employee, sizeof(employee));
 			data_base_file_pointer.close();
 			cin >> given_password;
@@ -1652,7 +1909,6 @@ void delete_an_employee()
 				wait(199);
 				to_be_saved_employee_numbers.push_back(index_number);
 			}
-			break;
 		}
 		else if (found_employee == false)
 		{
@@ -1667,7 +1923,7 @@ void delete_an_employee()
 	}
 	else
 	{
-		file_pointer.open("C:\\Users\\Public\\Documents\\TDsoftwares\\Advanced_Bank_Management_System\\EMPLOYERS_INDEX.TXT", ios::out);
+		file_pointer.open("C:\\Users\\Public\\Documents\\TDsoftwares\\Advanced_Bank_Management_System\\EMPLOYERS_INDEX.TXT", ios::out | ios::binary);
 		for (i = 0; i < to_be_saved_employee_numbers.size(); i++)
 		{
 			file_pointer << to_be_saved_employee_numbers[i] << '\n';
@@ -1685,15 +1941,16 @@ void delete_an_employee()
 
 void create_employee()
 {
+	fflush(stdin);
 	vector<long long int> others_numbers;
 	bank_employee temp_employer, new_employer;
 	string name, address, password, phone_number, city, province, country, temp;
 	char sex;
-	long long int employers_numbers_from_index = 1, weekly_income;
+	long long int employers_numbers_from_index = 1, weekly_income, i;
 	short int birth_date, birth_month, birth_year;
 	bool is_manager = false;
 	fstream index_file_pointer, database_file_pointer;
-	index_file_pointer.open("C:\\Users\\Public\\Documents\\TDsoftwares\\Advanced_Bank_Management_System\\EMPLOYERS_INDEX.TXT", ios::in);
+	index_file_pointer.open("C:\\Users\\Public\\Documents\\TDsoftwares\\Advanced_Bank_Management_System\\EMPLOYERS_INDEX.TXT", ios::in | ios::binary);
 	have_record = bool(index_file_pointer);
 	if (have_record)
 	{
@@ -1716,32 +1973,41 @@ void create_employee()
 	getline(cin, name);
 	while (name.size() == 0)
 	{
-		gxy(5, 3), printf("Enter Full name(Cannot be Empty): ");
+		gxy(5, 2), printf("Enter Full name(Cannot be Empty):               \b\b\b\b\b\b\b\b\b\b\b\b\b\b");
+		for (i = 0; i < name[i]; i++)
+			printf(" ");
+		for (i = 0; i < name[i]; i++)
+			printf("\b");
 		getline(cin, name);
 	}
-	gxy(5, 4), printf("Enter employer phone_number(maximum 50 words) : ");
+	gxy(5, 3), printf("Enter employer phone_number(maximum 50 words) : ");
 	getline(cin, phone_number);
 	while (phone_number.size() == 0 or isalpha(*phone_number.c_str()))
 	{
-		gxy(5, 5), printf("Enter valid Phone number:");
+		gxy(5, 3);
+		for (i = 0; i < phone_number.size() + sizeof("Enter employer phone_number(maximum 50 words)(default =  ): "); i++)
+			printf(" ");
+		for (i = 0; i < phone_number.size() + sizeof("Enter employer phone_number(maximum 50 words)(default =  ): "); i++)
+			printf("\b");
+		gxy(5, 3), printf("Enter valid Phone number:");
 		getline(cin, phone_number);
 	}
-	gxy(5, 6), printf("enter employer address(50 words maximum): ");
+	gxy(5, 4), printf("enter employer address(50 words maximum): ");
 	getline(cin, address);
-	gxy(5, 7), printf("Enter employer city(maximum 20 words): ");
+	gxy(5, 5), printf("Enter employer city(maximum 20 words): ");
 	getline(cin, city);
-	gxy(5, 8), printf("Enter employer province(maximum 20 words): ");
+	gxy(5, 6), printf("Enter employer province(maximum 20 words): ");
 	getline(cin, province);
-	gxy(5, 9), printf("Enter employer country(maximum 50 words): ");
+	gxy(5, 7), printf("Enter employer country(maximum 50 words): ");
 	getline(cin, country);
-	gxy(5, 10), printf("Enter employer sex(M/F/T/O): ");
+	gxy(5, 8), printf("Enter employer sex(M/F/T/O): ");
 	sex = getch();
 	while (sex != 'M' and sex != 'm' and sex != 'F' and sex != 'f' and sex != 'T' and sex != 't' and sex != 'O' and sex != 'o')
 	{
-		gxy(5, 11), printf(">>>>>>>>\aEnter employer sex(M/F/T/O): ");
+		gxy(5, 9), printf(">>>>>>>>\aEnter employer sex(M/F/T/O): ");
 		sex = getch();
 	}
-	gxy(5, 12), printf("Enter employer birth date(int. only): ");
+	gxy(5, 10), printf("Enter employer birth date(int. only): ");
 	cin >> temp;
 	if (!isalpha(*temp.c_str()))
 	{
@@ -1749,27 +2015,34 @@ void create_employee()
 	}
 	while (birth_date > 31 or birth_date < 1 or isalpha(*temp.c_str()))
 	{
-		gxy(5, 13), printf("Enter Employer Birthdate(can not be less than 1 and more than 31):                    \b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b");
+		gxy(5, 10), printf("Enter Employer Birthdate(can not be less than 1 and more than 31):");
+		for (i = 0; i < temp[i]; i++)
+			printf(" ");
+		for (i = 0; i < temp[i]; i++)
+			printf("\b");
 		cin >> temp;
 		if (!isalpha(*temp.c_str()))
 			birth_date = stoi(temp);
 	}
-
-	gxy(5, 14), printf("Enter employer birth month(int. only): ");
+	gxy(5, 11), printf("Enter employer birth month(int. only): ");
 	cin >> temp;
 	if (!isalpha(*temp.c_str()))
 	{
 		birth_month = stoi(temp);
 	}
-	while (birth_month > 31 or birth_month < 1 or isalpha(*temp.c_str()))
+	while (birth_month > 12 or birth_month < 1 or isalpha(*temp.c_str()))
 	{
-		gxy(5, 15), printf("Enter Employer Birthmonth(can not be less than 1 and more than 12):                    \b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b");
+		gxy(5, 11), printf("Enter Employer Birthmonth(can not be less than 1 and more than 12): ");
+		for (i = 0; i < temp[i]; i++)
+			printf(" ");
+		for (i = 0; i < temp[i]; i++)
+			printf("\b");
 		cin >> temp;
 		if (!isalpha(*temp.c_str()))
 			birth_month = stoi(temp);
 	}
 
-	gxy(5, 16), printf("Enter employer birth year(int. only): ");
+	gxy(5, 12), printf("Enter employer birth year(int. only): ");
 	cin >> temp;
 	if (!isalpha(*temp.c_str()))
 	{
@@ -1777,35 +2050,37 @@ void create_employee()
 	}
 	while (birth_year > 2022 or birth_year < 1910 or isalpha(*temp.c_str()))
 	{
-		gxy(5, 17), printf("Enter Employer Birth year(can not be imaginary):                    \b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b");
+		gxy(5, 12), printf("Enter Employer Birth year(can not be imaginary):");
+		for (i = 0; i < temp[i]; i++)
+			printf(" ");
+		for (i = 0; i < temp[i]; i++)
+			printf("\b");
 		cin >> temp;
 		if (!isalpha(*temp.c_str()))
 			birth_year = stoi(temp);
 	}
-	gxy(5, 18), printf("Enter employer weekly wage(int. only): ");
+	gxy(5, 13), printf("Enter your salary per week: ");
 	cin >> temp;
-	if (!isalpha(*temp.c_str()))
+	while (!check_full_numerical_expressions(temp))
 	{
-		weekly_income = stoi(temp);
+		gxy(5, 13);
+		for (i = 0; temp[i]; i++)
+			printf(" ");
+		for (i = 0; temp[i]; i++)
+			printf("\b");
+		printf("Enter your salary per week: ");
 	}
-	while (isalpha(*temp.c_str()))
-	{
-		gxy(5, 18), printf("Weekly income can not be imaginary:                    \b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b");
-		cin >> temp;
-		if (!isalpha(*temp.c_str()))
-			weekly_income = stoi(temp);
-	}
-	gxy(5, 19), printf("Enter password(password should be atleast 8 words and have numbers and alpphabets): ");
-	cin.ignore();
+	fflush(stdin);
+	gxy(5, 14), printf("Enter password(password should be atleast 8 words and have numbers and alpphabets): ");
 	getline(cin, password);
 	while (check_password(password))
 	{
-		gxy(2, 20), printf("\b\b\a>>>>>>>>>>>>>>Enter password(password should be atleast 8 words and have numbers and alpphabets):                \b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b");
+		gxy(2, 15), printf("\b\b\a>>>>>>>>>>>>>>Enter password(password should be atleast 8 words and have numbers and alpphabets):                \b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b");
 		getline(cin, password);
 	}
 	if (is_manager == false)
 	{
-		gxy(6, 21), printf("Is this employee a manager(1/0) : ");
+		gxy(6, 16), printf("Is this employee a manager(1/0) : ");
 		cin >> is_manager;
 	}
 	new_employer.set_everything(name, phone_number, password, address, city, province, country, sex, weekly_income, birth_date, birth_month, birth_year, is_manager);
@@ -1814,11 +2089,11 @@ void create_employee()
 		new_employer.set_new_employee_number();
 	}
 	new_employer.set_account_create_date();
-	database_file_pointer.open("C:\\Users\\Public\\Documents\\TDsoftwares\\Advanced_Bank_Management_System\\Employers_Record\\" + to_string(new_employer.get_employers_number()) + ".txt", ios::out);
+	database_file_pointer.open("C:\\Users\\Public\\Documents\\TDsoftwares\\Advanced_Bank_Management_System\\Employers_Record\\" + to_string(new_employer.get_employers_number()) + ".txt", ios::out | ios::binary);
 	database_file_pointer.write(reinterpret_cast<char *>(&new_employer), sizeof(new_employer));
 	database_file_pointer.close();
 	index_file_pointer.close();
-	index_file_pointer.open("EMPLOYERS_INDEX.TXT", ios::app);
+	index_file_pointer.open("C:\\Users\\Public\\Documents\\TDsoftwares\\Advanced_Bank_Management_System\\EMPLOYERS_INDEX.TXT", ios::app | ios::binary);
 	index_file_pointer << '\n'
 					   << new_employer.get_employers_number();
 	index_file_pointer.close();
@@ -1830,10 +2105,12 @@ void create_employee()
 	getch();
 	gxy(6, 18), printf("Going to main menu");
 	wait(500);
+	fflush(stdin);
 }
 
 void main_menu_for_managers(bank_employee current_employee)
 {
+	fflush(stdin);
 	char main_menu_choice;
 main_menu_start:
 	system("cls");
@@ -1944,11 +2221,13 @@ main_menu_start:
 		break;
 	}
 	}
+	fflush(stdin);
 	goto main_menu_start;
 }
 
 void log_in_screen()
 {
+	fflush(stdin);
 	bank_employee employer;
 	vector<long long int> employers_numbers;
 	bank_employee temp_employer;
@@ -1956,7 +2235,8 @@ void log_in_screen()
 	bool check_employee = false;
 	fstream file_pointer;
 	string log_in_password;
-	file_pointer.open("C:\\Users\\Public\\Documents\\TDsoftwares\\Advanced_Bank_Management_System\\EMPLOYERS_INDEX.TXT", ios::in);
+	log_in_password.clear();
+	file_pointer.open("C:\\Users\\Public\\Documents\\TDsoftwares\\Advanced_Bank_Management_System\\EMPLOYERS_INDEX.TXT", ios::in | ios::binary);
 	system("cls");
 	system("Color 0A");
 	drawboard();
@@ -1980,7 +2260,7 @@ void log_in_screen()
 		have_record = false;
 		create_employee();
 		file_pointer.close();
-		file_pointer.open("C:\\Users\\Public\\Documents\\TDsoftwares\\Advanced_Bank_Management_System\\EMPLOYERS_INDEX.TXT", ios::in);
+		file_pointer.open("C:\\Users\\Public\\Documents\\TDsoftwares\\Advanced_Bank_Management_System\\EMPLOYERS_INDEX.TXT", ios::in | ios::binary);
 		while (!file_pointer.eof())
 		{
 			file_pointer >> i;
@@ -2002,17 +2282,30 @@ log_in_again:
 		wait(190);
 		exit(0);
 	}
-	else
+	if (check_full_numerical_expressions(log_in_password))
 	{
 		log_in_id = stoi(log_in_password);
-		gxy(10, 14), printf("                                                                                                     ");
+		gxy(10, 14);
+		for (i = 0; i < sizeof("Type exit to exit from the program. Or enter log in id to log in."); i++)
+			printf(" ");
+	}
+	else
+	{
+		gxy(8, 5);
+		for (i = 0; log_in_password[i] + 8; i++)
+			printf(" ");
+		for (i = 0; log_in_password[i] + 8; i++)
+			printf("\b");
+		for (i = 0; log_in_password[i]; i++)
+			printf("\b");
+		goto log_in_again;
 	}
 	for (i = 0; i < employers_numbers.size(); i++)
 	{
 		if (log_in_id == employers_numbers[i])
 		{
 			fstream database_file_pointer;
-			database_file_pointer.open("C:\\Users\\Public\\Documents\\TDsoftwares\\Advanced_Bank_Management_System\\Employers_Record\\" + to_string(log_in_id) + ".txt", ios::in);
+			database_file_pointer.open("C:\\Users\\Public\\Documents\\TDsoftwares\\Advanced_Bank_Management_System\\Employers_Record\\" + to_string(log_in_id) + ".txt", ios::in | ios::binary);
 			database_file_pointer.read(reinterpret_cast<char *>(&employer), sizeof(employer));
 			database_file_pointer.close();
 			check_employee = true;
@@ -2022,13 +2315,13 @@ log_in_again:
 	if (check_employee)
 	{
 		gxy(5, 8), printf("Enter Password: ");
-		cin.ignore();
+		fflush(stdin);
 		getline(cin, log_in_password);
 		access_granted = employer.check_password(log_in_password);
 	}
 	else
 	{
-		printf("No user found. going to log in screen again");
+		gxy(5, 5), printf("No user found. going to log in screen again");
 		wait(700);
 		system("cls");
 		drawboard();
@@ -2055,7 +2348,7 @@ log_in_again:
 	}
 	else
 	{
-		printf("Wrong password. Going to log in screen again");
+		gxy(5, 8), printf("Wrong password. Going to log in screen again");
 		wait(500);
 		check_employee = false;
 		system("cls");
@@ -2067,6 +2360,7 @@ log_in_again:
 
 void log_out(bank_employee current_employee)
 {
+	fflush(stdin);
 	system("cls");
 	system("Color E0");
 	drawboard();
@@ -2084,10 +2378,12 @@ void log_out(bank_employee current_employee)
 	wait(300);
 	system("cls");
 	log_in_screen();
+	fflush(stdin);
 }
 
 int main()
 {
+	fflush(stdin);
 	SetConsoleTitle("                                                                                                         		      Bank Management System");
 	/* >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>							Should run from here                                             <<<<<<<<<<<<<<<<<<<<<<<<<<<*/
 	const char *dir = "C:\\Users\\Public\\Documents\\TDsoftwares\\Advanced_Bank_Management_System";
