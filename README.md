@@ -2,6 +2,11 @@
 
 Welcome to the Advanced Bank Management project! This application, written in C++, aims to provide a comprehensive and efficient system for managing various banking operations.
 
+## Author
+**Teertha Deb**  
+- [LinkedIn Profile](https://www.linkedin.com/in/maharaj-teertha-deb/)
+- [Portfolio](https://teerthadeb.github.io/Portfolio/)
+
 ## Table of Contents
 
 - [Features](#features)
